@@ -8,6 +8,7 @@
 ======================================="""
 import subprocess
 
+import click
 import webview
 
 # 用于存储webssh进程PID的字典
@@ -25,7 +26,12 @@ def start_webssh(session_name):
     print(f"Started webssh for session '{session_name}'. PID: {process.pid}")
 
 
-if __name__ == '__main__':
+@click.command()
+def main():
     start_webssh('default')
     webview.create_window('All-Keeper', 'http://127.0.0.1:8001/bupt2018213267@Sdm98/', width=1400, height=1000)
     webview.start()
+
+
+if __name__ == '__main__':
+    main()
