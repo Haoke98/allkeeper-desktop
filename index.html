@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Subprocess Output</title>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
+    <script>
+        var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + '/output');
+
+        socket.on('connect', function() {
+            console.log('Connected');
+        });
+
+        socket.on('output', function(data) {
+            var outputDiv = document.getElementById('output');
+            outputDiv.innerHTML += data + '<br>';
+        });
+    </script>
+</head>
+<body>
+    <div id="output"></div>
+</body>
+</html>
