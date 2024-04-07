@@ -2,7 +2,7 @@
 
 A desktop version for the project allkeeper(https://github.com/Haoke98/Allkeeper.git)
 
-## Develop Plan
+## Develop Plan & TODO
 
 * [ ] 支持lrzsz ( js调起上传下载文件, [pywebview](https://github.com/r0x0r/pywebview)
   支持 [DragDrop](https://pywebview.flowrl.com/examples/drag_drop.html)
@@ -10,6 +10,9 @@ A desktop version for the project allkeeper(https://github.com/Haoke98/Allkeeper
 * [ ] 集成SSH客户端
 * [ ] 集成各大流行数据库客户端
 * [ ] 服务器之间进行双重加密通信
+* [ ] Offline mode
+  * [ ] change the db to sqlite3
+  * [ ] data sync logic
 
 ## 引用 & 感谢
 
