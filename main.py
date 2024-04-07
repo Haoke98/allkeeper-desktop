@@ -6,18 +6,12 @@
 @Software: PyCharm
 @disc:
 ======================================="""
-import multiprocessing
 import os
 import subprocess
 import sys
-import threading
 import time
 
-from flask_socketio import SocketIO
-from flask import Flask, render_template
-
 import click
-import django
 import webview
 
 from proj.settings import BASE_DIR
@@ -26,19 +20,10 @@ LOG_DIR = os.path.join(BASE_DIR, 'logs')
 if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)
     print('Created log directory: {}'.format(LOG_DIR))
+
 # 用于存储webssh进程PID的字典
 webssh_pids = {}
-app = Flask(__name__)
-socketio = SocketIO(app)
 
-
-# @app.route('/')
-# def index():
-#     return render_template('index.html')
-# @socketio.on('connect', namespace='/output')
-# def handle_connect():
-#     thread = threading.Thread(target=stream_output, args=(request.namespace, ))
-#     thread.start()
 
 def start_service(namespace: str = "WebSSH_Service", command: list = None):
     # 启动服务进程
@@ -48,30 +33,6 @@ def start_service(namespace: str = "WebSSH_Service", command: list = None):
     with open(stdout_fp, "w") as stdout_f, open(stderr_fp, "w") as stderr_f:
         process = subprocess.Popen(command, stdout=stdout_f, stderr=stderr_f, text=True)
         print(f"{namespace} Service Started ... PID: {process.pid}")
-
-    # 获取并记录PID
-    # webssh_pids[namespace] = process.pid
-    # # TODO: 写入到文件中进行持久化记录
-    # for line in iter(process.stdout.readline, ''):
-    #     socketio.emit('output', line, namespace=namespace)
-
-
-def start_django(port: int, namespace: str = "django_service"):
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'proj.settings')
-    try:
-        from django.core.management import execute_from_command_line
-    except ImportError as exc:
-        raise ImportError(
-            "Couldn't import Django. Are you sure it's installed and "
-            "available on your PYTHONPATH environment variable? Did you "
-            "forget to activate a virtual environment?"
-        ) from exc
-
-    print("Command line arguments:", sys.argv)
-    django_args = ['manage.py', 'runserver', str(port)]
-    print("Django arguments:", django_args)
-    django.setup()
-    execute_from_command_line(django_args)
 
 
 def start_webview(port: int):
