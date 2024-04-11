@@ -32,7 +32,7 @@ def start_service(namespace: str = "WebSSH_Service", command: list = None):
     # 请根据实际情况替换webssh命令和参数
     with open(stdout_fp, "w") as stdout_f, open(stderr_fp, "w") as stderr_f:
         process = subprocess.Popen(command, stdout=stdout_f, stderr=stderr_f, text=True)
-        print(f"{namespace} Service Started ... PID: {process.pid}")
+        print(f"{namespace} Service Started ... PID: {process.pid}, stdout: {stdout_f}, stderr: {stderr_f}")
 
 
 def start_webview(port: int):
