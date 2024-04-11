@@ -2,6 +2,23 @@
 
 A desktop version for the project allkeeper(https://github.com/Haoke98/Allkeeper.git)
 
+## Build
+
+* It is need to install `libffi`
+
+  The following uses MacOS as an example for demonstration:
+  ```shell
+  brew install libffi
+  ```
+  create link:
+  ```shell
+  sudo ln -s /opt/homebrew/opt/libffi/lib/libffi.8.dylib /usr/local/lib/libffi.8.dylib
+  ```
+  build:
+  ```shell
+  python setup.py py2app
+  ```
+
 ## Develop Plan & TODO
 
 * [ ] 支持lrzsz ( js调起上传下载文件, [pywebview](https://github.com/r0x0r/pywebview)
@@ -11,8 +28,8 @@ A desktop version for the project allkeeper(https://github.com/Haoke98/Allkeeper
 * [ ] 集成各大流行数据库客户端
 * [ ] 服务器之间进行双重加密通信
 * [ ] Offline mode
-  * [ ] change the db to sqlite3
-  * [ ] data sync logic
+    * [ ] change the db to sqlite3
+    * [ ] data sync logic
 
 ## 引用 & 感谢
 
