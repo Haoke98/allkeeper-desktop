@@ -13,7 +13,7 @@ from pytz import UTC
 
 from .models import IMedia, LocalMedia
 from .serializers import IMediaSerializer, LocalMediaSerializer
-from .services import update, create_icloud_service
+from .services import update, create_icloud_service, collect
 from proj.secret import MINIO_STORAGE_SECRET_KEY, MINIO_STORAGE_ENDPOINT, MINIO_STORAGE_ACCESS_KEY
 from proj.settings import MINIO_STORAGE_MEDIA_BUCKET_NAME, MINIO_STORAGE_USE_HTTPS, MINIO_STORAGE_CERT_CHECK
 
@@ -183,7 +183,10 @@ def detail(request):
                 "msg": f"找不到[ID:{target_id}]对应的IMedia对象"
             })
         else:
-            serializer = IMediaSerializer(targetObj)
+            print(f"targetObj:[startRank:{targetObj.startRank}, appleId:{targetObj.appleId}]")
+            # TODO: 这里增加一个时间有效性判断
+            collect(targetObj.startRank, targetObj.appleId)
+            # FIXME: serializer = IMediaSerializer(targetObj)
             return JsonResponse({
                 "code": 200,
                 "msg": "ok",
