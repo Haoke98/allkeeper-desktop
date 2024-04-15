@@ -36,6 +36,11 @@
                        loop>
                     <source :src="currObj.masterRecord.fields.resVidSmallRes.value.downloadURL" type="video/mp4">
                 </video>
+                <video v-else-if="currObj.masterRecord.fields.resVidMedRes!==undefined && preview" autoplay controls
+                       style="width: 100%;height: 50vh;"
+                       loop>
+                    <source :src="currObj.masterRecord.fields.resVidMedRes.value.downloadURL" type="video/mp4">
+                </video>
             </div>
         </el-tab-pane>
         <el-tab-pane label="当前MediaObj"><pre style="background-color: #f4f4f4;
@@ -50,7 +55,7 @@
     const app = new Vue({
         data: {
             id: 0,
-            preview: false,
+            preview: true,
             currObjJsonString:"",
             currObj: {
                 "masterRecord": {
@@ -389,6 +394,8 @@
                     this.getData();
                 },
                 currObj(newV,odlV){
+                    this.currObjJsonString = newV;
+                    console.log("currObjJsonStr:",this.currObjJsonString)
                 }
             },
             computed: {
@@ -435,9 +442,16 @@
                     let res = image_ext.indexOf(record.fields.resOriginalFileType.value) !== -1;
                     console.log("isImage:", record, record.fields.resOriginalFileType.value, res)
                     try {
-                        console.log(currObj.fields.resVidSmallRes, currObj.fields.resVidSmallRes !== undefined)
+                        let ok = record.fields.resVidSmallRes !== undefined;
+                        console.log(record.fields.resVidSmallRes, ok,this.preview, ok&&this.preview)
                     } catch (e) {
-                        console.log("没有resVidSmallRes字段")
+                        console.log("没有resVidSmallRes字段",e)
+                        try{
+                            ok = record.fields.resVidMedRes !== undefined;
+                            console.log(record.fields.resVidMedRes,ok,this.preview, ok&&this.preview)
+                        } catch (e) {
+                            console.log("没有resVidMedRes字段",e)
+                        }
                     }
                     return res;
                 },
@@ -488,6 +502,7 @@
                         console.log("resp:", resp.status, resp.statusText, resp.headers.get("Content-Type"))
                         resp.json().then(respJson => {
                             _this.currObj = respJson.data;
+                            _this.currObjJsonString = JSON.stringify(respJson.data, null, 4);
                             console.log("respJson:", respJson)
                             console.log("currObj:", _this.currObj)
                             loading.close();

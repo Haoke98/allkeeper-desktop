@@ -185,3 +185,4 @@ nohup.out
 /proj/test.py
 *.lic
 /logs/
+/tests/
