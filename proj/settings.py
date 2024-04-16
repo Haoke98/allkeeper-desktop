@@ -247,6 +247,10 @@ WSGI_APPLICATION = 'proj.wsgi.application'
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 DATABASES = {
     'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'database.db',
+    },
+    'remote': {
         'ENGINE': secret.DB_BACKEND,
         'NAME': secret.DB_DATABASE,
         'HOST': secret.DB_HOST,
