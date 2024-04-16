@@ -24,7 +24,6 @@ from revproxy.views import ProxyView
 from .view import media
 
 import accountSystem.urls
-import eynek.urls
 import icloud.urls
 import jumpService.urls
 from proj import settings
@@ -46,8 +45,6 @@ urlpatterns = [
     re_path('^icloud/', include(icloud.urls)),
     path("favicon.ico", RedirectView.as_view(url=_STATIC_URL + 'favicon.ico')),
     re_path(r'^static/(?P<path>.*)$', serve, ({'document_root': settings.STATIC_ROOT})),
-    # FIXME: media资源访问时需要进行鉴权 Security BUG.
-    re_path('^eynek/', include(eynek.urls)),
     path('sp/', include('simplepro.urls')),
     re_path('^jump_service/', include(jumpService.urls)),
     # 添加新的路由时必须在此上方进行添加, 千万不要放在下方(不会进行解析和路由).

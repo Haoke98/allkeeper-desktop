@@ -193,8 +193,6 @@ INSTALLED_APPS = [
     'sortedm2m',
     'django_crontab',
     'icloud',
-    'logAnalyser',
-    'eynek',
     'jumpService'
 ]
 SITE_ID = 1
