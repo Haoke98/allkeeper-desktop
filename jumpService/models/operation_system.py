@@ -32,7 +32,10 @@ class OperationSystemImage(BaseModel):
         ]
 
     def __str__(self):
-        return f"{self.name}{self.version}"
+        _res = f"{self.name}{self.version}"
+        if self.arch:
+            return f"{_res}-{self.arch}"
+        return _res
 
 
 class OperationSystem(BaseModel):

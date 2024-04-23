@@ -50,7 +50,7 @@ class ServerNew(NetDevice):
     system_count.short_description = "承载系统数量"
 
     class Meta:
-        verbose_name = "服务器"
+        verbose_name = "物理服务器"
         verbose_name_plural = verbose_name
 
     def __str__(self):
