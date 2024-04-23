@@ -10,11 +10,12 @@ import os
 import subprocess
 import sys
 import time
+from pathlib import Path
 
 import click
 import webview
 
-from proj.settings import BASE_DIR
+BASE_DIR = Path(__file__).resolve().parent
 
 LOG_DIR = os.path.join(BASE_DIR, 'logs')
 if not os.path.exists(LOG_DIR):
@@ -46,7 +47,7 @@ def start_webview(port: int):
 @click.option('--port', default=8000, type=int, help='The port of the Django service')
 def main(port):
     start_service(namespace="WebSSH", command=['wssh', '--port=9080', '--xsrf=False'])
-    start_service(namespace="Django", command=['python', 'manage.py', 'runserver', f'0.0.0.0:{port}'])
+    start_service(namespace="Django", command=['python', './service/manage.py', 'runserver', f'0.0.0.0:{port}'])
     time.sleep(5)
     start_webview(port)
     print("Command line arguments (after execute):", sys.argv)

@@ -6,29 +6,18 @@
 @Software: PyCharm
 @disc:
 ======================================="""
-import os
 
 from setuptools import setup
 
-
-def tree(src):
-    resp = []
-    for (_root, dirs, files) in os.walk(os.path.normpath(src)):
-        fps = []
-        for f in files:
-            fp = os.path.join(_root, f)
-            fps.append(fp)
-        resp.append((_root, fps))
-    return resp
-
+from utils import tree
 
 ENTRY_POINT = ['main.py']
 
-DATA_FILES = tree('common-static') + tree('utils')
+DATA_FILES = tree('service')
 OPTIONS = {
     'argv_emulation': False,
     'strip': True,
-    # 'iconfile': 'icon.icns', # uncomment to include an icon
+    'iconfile': 'cooperation_puzzle_icon_262690.icns',  # uncomment to include an icon
     'includes': ['WebKit', 'Foundation', 'webview'],
 }
 

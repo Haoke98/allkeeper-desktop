@@ -55,7 +55,6 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'accountSystem/static'),
     os.path.join(BASE_DIR, 'common-static'),
     os.path.join(BASE_DIR, 'icloud/static'),
-    os.path.join(BASE_DIR, 'eynek/static'),
 ]
 logging.info(f"STATICFILES_DIR:{STATICFILES_DIRS}")
 

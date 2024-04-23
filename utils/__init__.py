@@ -8,6 +8,18 @@
 ======================================="""
 import decimal
 import math
+import os
+
+
+def tree(src):
+    resp = []
+    for (_root, dirs, files) in os.walk(os.path.normpath(src)):
+        fps = []
+        for f in files:
+            fp = os.path.join(_root, f)
+            fps.append(fp)
+        resp.append((_root, fps))
+    return resp
 
 
 def human_readable_bytes(num_bytes):
@@ -34,3 +46,8 @@ def human_readable_time(milliseconds):
         return f"{seconds}秒 {milliseconds % 1000}毫秒"
     else:
         return f"{milliseconds}毫秒"
+
+
+if __name__ == '__main__':
+    res = tree("../utils")
+    print(res)
