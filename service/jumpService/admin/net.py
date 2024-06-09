@@ -140,7 +140,7 @@ class NetWorkAdmin(admin.ModelAdmin):
 @admin.register(NetDevice)
 class NetDeviceAdmin(BaseAdmin):
     list_display = ['id', 'remark', 'mac', 'createdAt', 'updatedAt', 'deletedAt']
-    search_fields = ['status', 'remark', 'net', 'mac']
+    search_fields = ['id', 'remark', 'mac']
     ordering = ('-updatedAt',)
     inlines = [IPAddressInlineAdmin]
     fields_options = {

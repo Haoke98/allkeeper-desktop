@@ -47,7 +47,7 @@ class ServerAdmin(BaseAdmin):
                     ]
     list_display_links = ['remark', 'hoster']
     list_filter = ['hoster', 'cabinet__room', 'cabinet', 'updatedAt', 'createdAt', 'deletedAt']
-    search_fields = ['remark', 'code']
+    search_fields = ['id', 'remark', 'code']
     search_help_text = ['你好，这是搜索帮助语句！']
     autocomplete_fields = []
     list_per_page = 10
