@@ -9,6 +9,7 @@
 import os
 import subprocess
 import sys
+import threading
 import time
 from pathlib import Path
 
@@ -36,20 +37,31 @@ def start_service(namespace: str = "WebSSH_Service", command: list = None):
         print(f"{namespace} Service Started ... PID: {process.pid}, stdout: {stdout_f}, stderr: {stderr_f}")
 
 
-def start_webview(port: int):
+def navigate_after_delay(window: webview.Window, url, delay):
+    def navigate():
+        time.sleep(delay)
+        print(f"Loading {url}...")
+        window.load_url(url)
+
+    th = threading.Thread(target=navigate)
+    th.daemon = True
+    th.start()
+    print(f"Loading {url} after {delay} seconds.")
+
+
+def on_window_start(window: webview.Window):
+    port = 8000
+    start_service(namespace="WebSSH", command=['wssh', f'--port=9080', '--xsrf=False'])
+    start_service(namespace="Django", command=['python', './service/manage.py', 'runserver', f'0.0.0.0:{port}'])
     url = f'http://127.0.0.1:{port}/bupt2018213267@Sdm98/'
-    print(f"Starting webview...{url}")
-    webview.create_window('All-Keeper', url, width=1400, height=1000)
-    webview.start(debug=True)
+    navigate_after_delay(window, url, 5)
 
 
 @click.command()
 @click.option('--port', default=8000, type=int, help='The port of the Django service')
 def main(port):
-    start_service(namespace="WebSSH", command=['wssh', '--port=9080', '--xsrf=False'])
-    start_service(namespace="Django", command=['python', './service/manage.py', 'runserver', f'0.0.0.0:{port}'])
-    time.sleep(5)
-    start_webview(port)
+    window = webview.create_window('All-Keeper', "http://localhost:9080", width=1400, height=1000)
+    webview.start(on_window_start, args=(window,), ssl=True, debug=True)
     print("Command line arguments (after execute):", sys.argv)
     print("AllKeeperDesktop is now running!")
 

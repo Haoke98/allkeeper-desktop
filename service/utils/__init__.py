@@ -8,18 +8,6 @@
 ======================================="""
 import decimal
 import math
-import os
-
-
-def tree(src):
-    resp = []
-    for (_root, dirs, files) in os.walk(os.path.normpath(src)):
-        fps = []
-        for f in files:
-            fp = os.path.join(_root, f)
-            fps.append(fp)
-        resp.append((_root, fps))
-    return resp
 
 
 def human_readable_bytes(num_bytes):
