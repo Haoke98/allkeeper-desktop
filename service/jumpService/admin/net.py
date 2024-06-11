@@ -157,7 +157,8 @@ class NetDeviceAdmin(BaseAdmin):
 @admin.register(IPAddress)
 class IPAddressAdmin(BaseAdmin):
     list_display = ['id', 'net', 'ip', 'device', 'createdAt', 'updatedAt', 'deletedAt']
-    search_fields = ['net', 'ip', 'device']
+    list_filter = ['net', 'device', 'createdAt', 'updatedAt']
+    search_fields = ['ip', 'device__remark', 'device__id']
     ordering = ('-updatedAt', '-createdAt')
     fields_options = {
         'id': FieldOptions.UUID,

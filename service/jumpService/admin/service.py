@@ -340,8 +340,9 @@ class ServiceAdmin(AjaxAdmin):
 
 @admin.register(ServiceUser)
 class ServiceUserAdmin(BaseAdmin):
-    list_display = ['id', 'service', 'username', 'password']
+    list_display = ['id', 'service', 'username', 'password', 'createdAt', 'updatedAt', 'deletedAt']
     list_filter = ['service', 'service__system__server', 'service__system', 'service___type']
+    search_fields = ['username', 'password', 'service__system__server__remark']
     ordering = ('-updatedAt',)
 
     def formatter(self, obj, field_name, value):
