@@ -340,8 +340,8 @@ class ServiceAdmin(AjaxAdmin):
 
 @admin.register(ServiceUser)
 class ServiceUserAdmin(BaseAdmin):
-    list_display = ['id', 'service', 'username', 'password', 'createdAt', 'updatedAt', 'deletedAt']
-    list_filter = ['service', 'service__system__server', 'service__system', 'service___type']
+    list_display = ['id', 'service', 'username', 'password', 'hasRootPriority', 'createdAt', 'updatedAt', 'deletedAt']
+    list_filter = ['service', 'service__system__server', 'service__system', 'service___type', 'hasRootPriority']
     search_fields = ['username', 'password', 'service__system__server__remark']
     ordering = ('-updatedAt',)
 
