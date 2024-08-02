@@ -44,6 +44,7 @@ class ServiceType(BaseAccountModel):
 
 
 class Service(BaseAccountModel):
+    # Notice: 一个系统上理论上有且只有一个的服务, 不用这种动态服务的形式
     _type = fields.ForeignKey(to=ServiceType, on_delete=models.CASCADE, verbose_name="服务类型", null=True, blank=False)
     system = fields.ForeignKey(to=OperationSystem, on_delete=models.CASCADE, verbose_name="操作系统", null=True,
                                blank=False)

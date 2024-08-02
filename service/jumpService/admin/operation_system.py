@@ -9,10 +9,11 @@
 import base64
 
 from django.contrib import admin
+from django.forms import ModelForm
 from simplepro.admin import FieldOptions, BaseAdmin
 from simplepro.dialog import ModalDialog, MultipleCellDialog
 
-from ..models import OperationSystem, OperationSystemImage, SSHService, IPAddress
+from ..models import OperationSystem, OperationSystemImage, IPAddress, SystemUser
 
 
 @admin.register(OperationSystemImage)
@@ -46,64 +47,42 @@ class OperationSystemImageAdmin(admin.ModelAdmin):
     }
 
 
+class UserForm(ModelForm):
+    class Meta:
+        model = SystemUser
+        # fields = ['username', 'password', 'owner', 'hasRootPriority', 'group', 'remark']
+        fields = ['username', 'password', 'owner', 'remark']
+
+
+class UserInlineAdmin(admin.TabularInline):
+    model = SystemUser
+    form = UserForm
+    min_num = 0
+    extra = 0
+
+
 @admin.register(OperationSystem)
 class OperationSystemAdmin(BaseAdmin):
-    list_display = ['id', 'image', 'server', 'rootUsername', 'rootPassword', 'open_webssh',
+    list_display = ['id', 'image', 'server', 'open_webssh',
                     'updatedAt', 'createdAt', 'deletedAt']
     list_filter = ['server', 'image', 'server__remark']
-    search_fields = ['image', 'server']
+    search_fields = ['server__code', 'server__remark', 'server__ips__ip']
     ordering = ('-updatedAt',)
+    inlines = [UserInlineAdmin]
 
     def open_webssh(self, obj: OperationSystem):
-
         modals = []
-
-        def generate_modal(_ip: IPAddress, _port: int):
-            # FIXME:影响列表页的渲染, 增加延迟, 需要改成固定, 让用户在单个item的详情页里进行渲染, 在详情页中选入口/切换入口
-            print("ip:", _ip)
-            prefix = "入口"
-            if _ip.net is not None:
-                if _ip.net.is_global():
-                    prefix = "公网"
-                else:
-                    prefix = "内网"
-            modal = ModalDialog()
-            modal.width = "1200"
-            modal.height = "600"
-            # 这个是单元格显示的文本
-            modal.cell = f'<el-link type="primary">{prefix}{len(modals) + 1}</el-link>'
-            modal.title = "SSH安全远程链接"
-            # 是否显示取消按钮
-            modal.show_cancel = True
-            # Base64编码
-            encoded_pwd = base64.b64encode(obj.rootPassword.encode('utf-8')).decode('utf-8')
-            # FIXME: [高危敏感信息泄漏漏洞] 必须即使改成后端创建session后,再从前端通过session访问.
-            # 这里的url可以写死，也可以用django的反向获取url，可以根据model的数据，传到url中
-            modal.url = "http://localhost:9080?hostname={}&port={}&username={}&password={}".format(_ip.ip, _port,
-                                                                                                   obj.rootUsername,
-                                                                                                   encoded_pwd)
-            print("正在连接SSH", modal.url)
-            modals.append(modal)
-
-        ips = obj.server.ips.all()
-        ssh_services = obj.server.SSHServices.all()
-        print("ssh_services:", ssh_services)
-        ssh_port = 22
-        if ssh_services.__len__() > 0:
-            ssh_port = ssh_services[0].port
-        for ip in ips:
-            generate_modal(ip, ssh_port)
-        # TODO: 实现通过 lanproxy 的 API 实时创建端口映射关系.
-        #  可以先查看有没有和当前服务器处在同一个网段的 lanproxy客户端, 也就是有没有可用的channels
-        port_maps = obj.server.right_ports.all()
-        for i, port_map in enumerate(port_maps):
-            if i == 0:
-                print("port_map:")
-            if port_map.rightPort == ssh_port:
-                print(" " * 10, "|", "-" * 10, f"{i}.", port_map)
-                _ips = port_map.left.ips.all()
-                for ip in _ips:
-                    generate_modal(ip, port_map.leftPort)
+        modal = ModalDialog()
+        modal.width = "92%"
+        modal.height = "70vh"
+        # 这个是单元格显示的文本
+        modal.cell = f'<el-link type="primary">连接</el-link>'
+        modal.title = obj.__str__()
+        # 是否显示取消按钮
+        modal.show_cancel = True
+        modal.url = f"/jump_service/op_sys/remote/control?id={obj.id}"
+        # print("正在连接SSH", modal.url)
+        modals.append(modal)
         return MultipleCellDialog(modals)
 
     open_webssh.short_description = "远程桌面/SSH"

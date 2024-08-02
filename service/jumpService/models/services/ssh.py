@@ -8,13 +8,15 @@
 ======================================="""
 from django.db import models
 from simplepro.components import fields
+from simplepro.lib import pkHelper
+from simplepro.models import BaseModel
 
-from .service import AbstractBaseServiceUserModel, AbstractBaseServiceModel
-from .. import ServerNew
+from .service import AbstractBaseServiceModel
+from ..operation_system import OperationSystem
 
 
 class SSHService(AbstractBaseServiceModel):
-    server = models.ForeignKey(to=ServerNew, on_delete=models.CASCADE, verbose_name="服务器", null=True,
+    server = models.ForeignKey(to='ServerNew', on_delete=models.CASCADE, verbose_name="服务器", null=True,
                                blank=False, db_index=True, related_name="SSHServices")
 
     class Meta:
@@ -22,9 +24,15 @@ class SSHService(AbstractBaseServiceModel):
         verbose_name_plural = verbose_name
 
 
-class SSHServiceUser(AbstractBaseServiceUserModel):
-    service = fields.ForeignKey(to=SSHService, on_delete=models.CASCADE, verbose_name="所属服务", null=True,
-                                blank=False)
+class SystemUser(BaseModel):
+    id = models.CharField(max_length=48, primary_key=True, default=pkHelper.uuid_generator)
+    owner = models.CharField(verbose_name="使用者", max_length=50, null=True, blank=True)
+    username = fields.CharField(max_length=32, null=True, blank=False, verbose_name="用户名")
+    password = fields.PasswordInputField(max_length=32, null=True, blank=False, verbose_name="密码", size="medium",
+                                         style="width:600px;", pattern="123456789,.asdfgzxcvbnm")
+    hasRootPriority = models.BooleanField(default=False, verbose_name="拥有root权限", blank=True)
+    system = models.ForeignKey(to=OperationSystem, on_delete=models.CASCADE, verbose_name="操作系统", null=True,
+                               blank=False, db_index=True, related_name="users")
     userGroup = (
         (0, "root:x:0:"),
         (1, "bin:x:1:"),
@@ -47,8 +55,14 @@ class SSHServiceUser(AbstractBaseServiceUserModel):
     group = fields.IntegerField(verbose_name='用户组', choices=userGroup, null=True, blank=True)
 
     class Meta:
-        verbose_name = "SSH账号"
+        verbose_name = "系统用户"
         verbose_name_plural = verbose_name
+        constraints = [
+            models.UniqueConstraint(fields=['system', 'username'], name="unique_judge_by_system")
+        ]
 
     def __str__(self):
-        return f"用户（{self.service.server},{self.owner}）"
+        res = f"{self.system}/{self.id}"
+        if self.owner:
+            res += " - " + self.owner
+        return res

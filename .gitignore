@@ -186,3 +186,4 @@ nohup.out
 *.lic
 /logs/
 /tests/
+/service/jumpService/migrations/

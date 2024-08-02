@@ -43,12 +43,11 @@ class OperationSystem(BaseModel):
                               verbose_name="系统镜像")
     server = fields.ForeignKey(to=ServerNew, on_delete=models.CASCADE, null=True, blank=False, verbose_name="服务器",
                                related_name="systems")
-    rootUsername = models.CharField(max_length=32, verbose_name="root用户名", blank=False, default="root")
-    rootPassword = fields.PasswordInputField(max_length=32, verbose_name="root密码", blank=False, null=True)
+    sshPort = models.PositiveSmallIntegerField(verbose_name="SSH端口", default=22, blank=True, null=True)
 
     class Meta:
         verbose_name = "操作系统"
         verbose_name_plural = verbose_name
 
     def __str__(self):
-        return f"{self.image}-{self.server}"
+        return f"{self.server}/{self.image}"

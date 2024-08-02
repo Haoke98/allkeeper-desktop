@@ -5,6 +5,8 @@ from simplepro.models import BaseModel
 
 from .net_device import NetDevice
 
+__all__ = ['ServerRoom', 'ServerCabinet', 'ServerNew', 'ServerStatus', 'CPU']
+
 
 class ServerRoom(BaseModel):
     code = fields.CharField(verbose_name="编号", max_length=50, null=True, unique=True, blank=False)
@@ -78,3 +80,10 @@ class ServerStatus(BaseModel):
         verbose_name = "服务器状态"
         verbose_name_plural = verbose_name
         ordering = ('-createdAt',)
+
+
+class CPU(BaseModel):
+    brand = fields.ForeignKey(to="Brand", on_delete=models.CASCADE, null=True, blank=True, verbose_name="品牌")
+    model = fields.CharField(max_length=50, unique=True)
+    name = fields.CharField(max_length=50, unique=True)
+    frequency = fields.IntegerField(verbose_name="频率(Ghz)", null=True, blank=True)
