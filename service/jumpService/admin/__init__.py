@@ -16,8 +16,7 @@ from .net import NetWorkAdmin, NetDeviceAdmin, IPAddressAdmin
 from .router import RouterAdmin
 from .server import ServerAdmin
 from .service import ServiceAdmin, ServiceUserAdmin, ServiceTypeAdmin
-from .ssh import SSHServiceAdmin, SystemUserAdmin
+from .ssh import SystemUserAdmin
 from .operation_system import OperationSystemAdmin
-from .brand import BrandAdmin
 from .channel import ChannelAdmin
 from .port import PortMapAdmin, PortAdmin

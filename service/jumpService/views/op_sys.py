@@ -11,7 +11,7 @@ import base64
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from ..models import OperationSystem, SystemUser
+from ..models import OperationSystem
 
 
 @csrf_exempt
