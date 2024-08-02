@@ -1,8 +1,7 @@
 from django.contrib import admin
-from django.db import IntegrityError
 from simplepro.admin import BaseAdmin, FieldOptions
 
-from ..models import SystemUser, OperationSystem
+from ..models import SystemUser
 
 
 @admin.register(SystemUser)
