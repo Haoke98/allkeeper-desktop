@@ -22,14 +22,9 @@ def ssh(request):
     _id = request.GET.get('id')
     obj = OperationSystem.objects.get(id=_id)
     ips = obj.server.ips.all()
-    ssh_services = obj.server.SSHServices.all()
     users = obj.users.all()
     # FIXME 这里需要先判断是否是Linux内核系统, 如果是Windows内核系统还得要用 远程桌面
-    # print("ssh_services:", ssh_services)
-    ssh_port = 22
-    if ssh_services.__len__() > 0:
-        ssh_port = ssh_services[0].port
-
+    ssh_port = obj.sshPort
     for _ip in ips:
 
         if _ip.net is not None:

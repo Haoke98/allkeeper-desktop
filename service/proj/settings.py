@@ -24,11 +24,15 @@ from .simpleUISettings import *
 SECURE_CROSS_ORIGIN_OPENER_POLICY = 'none'
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = Path(__file__).resolve().parent.parent
+HOME_DIR = os.path.expanduser("~")
+APP_HOME_DIR = os.path.join(HOME_DIR, 'all-keeper')
+if not os.path.isdir(APP_HOME_DIR):
+    os.mkdir(APP_HOME_DIR)
 
-LOG_FILE_DIR = os.path.join(BASE_DIR, 'logs')
+LOG_FILE_DIR = os.path.join(APP_HOME_DIR, 'logs')
 if not os.path.exists(LOG_FILE_DIR):
     os.mkdir(LOG_FILE_DIR)
-CACHE_DIR = os.path.join(BASE_DIR, 'cache')
+CACHE_DIR = os.path.join(APP_HOME_DIR, 'cache')
 
 PUBLIC_ROOT = os.path.join(BASE_DIR, 'public')
 if not os.path.exists(PUBLIC_ROOT):
@@ -245,7 +249,7 @@ WSGI_APPLICATION = 'proj.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'database.db',
+        'NAME': os.path.join(APP_HOME_DIR, 'database.db'),
     },
     'remote': {
         'ENGINE': secret.DB_BACKEND,

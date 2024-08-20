@@ -16,9 +16,10 @@ from pathlib import Path
 import click
 import webview
 
-BASE_DIR = Path(__file__).resolve().parent
+HOME_DIR = os.path.expanduser("~")
+APP_HOME_DIR = os.path.join(HOME_DIR, 'all-keeper')
 
-LOG_DIR = os.path.join(BASE_DIR, 'logs')
+LOG_DIR = os.path.join(APP_HOME_DIR, 'logs')
 if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)
     print('Created log directory: {}'.format(LOG_DIR))

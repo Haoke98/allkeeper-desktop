@@ -63,8 +63,8 @@ class UserInlineAdmin(admin.TabularInline):
 
 @admin.register(OperationSystem)
 class OperationSystemAdmin(BaseAdmin):
-    list_display = ['id', 'image', 'server', 'open_webssh',
-                    'updatedAt', 'createdAt', 'deletedAt']
+    list_display = ['id', 'image', 'server', 'open_webssh', 'sshPort',
+                                                            'updatedAt', 'createdAt', 'deletedAt']
     list_filter = ['server', 'image', 'server__remark']
     search_fields = ['server__code', 'server__remark', 'server__ips__ip']
     ordering = ('-updatedAt',)
@@ -114,8 +114,8 @@ class OperationSystemAdmin(BaseAdmin):
             'min_width': '280px',
             'align': 'left'
         },
-        'net': {
-            'min_width': '180px',
+        'sshPort': {
+            'min_width': '140px',
             'align': 'center'
         },
         'image': {
