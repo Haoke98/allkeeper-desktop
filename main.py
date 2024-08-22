@@ -13,6 +13,7 @@ import threading
 import time
 
 import click
+import requests
 import webview
 
 HOME_DIR = os.path.expanduser("~")
@@ -37,6 +38,16 @@ def start_service(namespace: str = "WebSSH_Service", command: list = None):
         print(f"{namespace} Service Started ... PID: {process.pid}, stdout: {stdout_f}, stderr: {stderr_f}")
 
 
+def check_django_status(target: str):
+    try:
+        response = requests.get(target)
+        if response.status_code == 200:
+            return True
+    except requests.exceptions.ConnectionError:
+        return False
+    return False
+
+
 def navigate_after_delay(window: webview.Window, url, delay):
     def navigate():
         time.sleep(delay)
@@ -49,12 +60,23 @@ def navigate_after_delay(window: webview.Window, url, delay):
     print(f"Loading {url} after {delay} seconds.")
 
 
+def navigate2after_wait(window: webview.Window, url):
+    start_time = time.time()
+    while not check_django_status(target=url):
+        time.sleep(1)  # 每隔1秒检查一次
+        print(f"Loading {url}...  ({time.time()-start_time} s)")
+
+    print(f"Loading {url} after {time.time()-start_time} seconds.")
+    window.load_url(url)
+
+
 def on_window_start(window: webview.Window):
     port = 8000
     start_service(namespace="WebSSH", command=['./services/wssh', f'--port=9080', '--xsrf=False'])
-    start_service(namespace="Django", command=['./services/allkeeper-django', 'runserver', f'0.0.0.0:{port}','--noreload'])
+    start_service(namespace="Django",
+                  command=['./services/allkeeper-django', 'runserver', f'0.0.0.0:{port}', '--noreload'])
     url = f'http://127.0.0.1:{port}/bupt2018213267@Sdm98/'
-    navigate_after_delay(window, url, 5)
+    navigate2after_wait(window, url)
 
 
 @click.command()
