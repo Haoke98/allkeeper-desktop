@@ -187,3 +187,4 @@ nohup.out
 /tests/
 /service/jumpService/migrations/
 /service/accountSystem/migrations/
+/mini-apps/
