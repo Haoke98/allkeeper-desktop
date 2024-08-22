@@ -8,22 +8,29 @@
 ======================================="""
 import logging
 import os
+from importlib.metadata import version
 
-import pip
-import pkg_resources
+from pip._internal.network.session import PipSession
+from pip._internal.req import parse_requirements
 from setuptools import setup
-from setuptools.config.expand import find_packages
 
 
 def _parse_requirements(file_path):
-    pip_ver = pkg_resources.get_distribution('pip').version
+    # 获取pip的版本
+    pip_ver = version('pip')
     pip_version = list(map(int, pip_ver.split('.')[:2]))
-    if pip_version >= [6, 0]:
-        raw = pip.req.parse_requirements(file_path,
-                                         session=pip.download.PipSession())
+
+    # 根据pip的版本选择不同的方法来解析requirements
+    if pip_version >= [20, 0]:  # 这里的版本号需要根据实际情况调整
+        requirements = parse_requirements(
+            file_path,
+            session=PipSession()
+        )
     else:
-        raw = pip.req.parse_requirements(file_path)
-    return [str(i.req) for i in raw]
+        requirements = parse_requirements(file_path)
+
+    # 返回requirements列表
+    return [str(req.requirement) for req in requirements]
 
 
 def tree(src):
@@ -37,6 +44,17 @@ def tree(src):
     return resp
 
 
+def tree_replace(src_folder, dst_folder):
+    resp = []
+    for (_root, dirs, files) in os.walk(os.path.normpath(src_folder)):
+        fps = []
+        for f in files:
+            fp = os.path.join(_root, f)
+            fps.append(fp)
+        resp.append((dst_folder, fps))
+    return resp
+
+
 # parse_requirements() returns generator of pip.req.InstallRequirement objects
 try:
     install_reqs = _parse_requirements("requirements.txt")
@@ -46,21 +64,29 @@ except Exception:
 
 ENTRY_POINT = ['main.py']
 
-DATA_FILES = tree('service') + tree('assets')
 OPTIONS = {
-    'argv_emulation': False,
+    'argv_emulation': True,
     'strip': True,
     'iconfile': 'cooperation_puzzle_icon_262690.icns',  # uncomment to include an icon
-    'includes': ['WebKit', 'Foundation', 'webview', 'elasticsearch', 'django'],
+    'includes': ['django', 'webssh'],
+    'excludes': ['_pytest', 'pdb', 'unittest', 'doctest'],
+    'plist': {
+        'CFBundleName': 'AllKeeper',
+        'CFBundleDisplayName': 'AllKeeper',
+        'CFBundleGetInfoString': "AllKeeper",
+        'CFBundleIdentifier': 'com.yourcompany.AllKeeper',
+        'CFBundleVersion': "0.1.0",
+        'CFBundleShortVersionString': "0.1.0",
+        'NSHumanReadableCopyright': 'Copyright © 2023 Your Company. All rights reserved.',
+    }
 }
 
 setup(
     name="AllKeeper",
     app=ENTRY_POINT,
-    packages=['service', 'assets'],
-    install_requires=install_reqs,
+    packages=['service', ],
     include_package_data=True,
-    data_files=DATA_FILES,
+    data_files=[] + tree_replace("service/dist", "services"),
     options={'py2app': OPTIONS},
     setup_requires=['py2app'],
 )
