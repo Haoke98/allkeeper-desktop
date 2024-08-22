@@ -9,7 +9,7 @@ a = Analysis(
     ['WebSSH.Py'],
     pathex=[],
     binaries=[],
-    datas=[(os.path.join(webssh_path, 'static'), 'webssh/static')],
+    datas=[(os.path.join(webssh_path, 'static'), 'webssh/static'),(os.path.join(webssh_path, 'templates'), 'webssh/templates')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
