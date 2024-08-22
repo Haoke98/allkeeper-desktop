@@ -74,10 +74,10 @@ OPTIONS = {
         'CFBundleName': 'AllKeeper',
         'CFBundleDisplayName': 'AllKeeper',
         'CFBundleGetInfoString': "AllKeeper",
-        'CFBundleIdentifier': 'com.yourcompany.AllKeeper',
-        'CFBundleVersion': "0.1.0",
-        'CFBundleShortVersionString': "0.1.0",
-        'NSHumanReadableCopyright': 'Copyright © 2023 Your Company. All rights reserved.',
+        'CFBundleIdentifier': 'com.0p.AllKeeper',
+        'CFBundleVersion': "2024.8.22.19",
+        'CFBundleShortVersionString': "1.0.0",
+        'NSHumanReadableCopyright': 'Copyright © 2024 新疆数智创想软件开发工作室. All rights reserved.',
     }
 }
 
