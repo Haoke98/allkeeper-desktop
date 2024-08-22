@@ -188,3 +188,4 @@ nohup.out
 /service/jumpService/migrations/
 /service/accountSystem/migrations/
 /mini-apps/
+backup_*.json
