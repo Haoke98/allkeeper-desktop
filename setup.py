@@ -67,7 +67,7 @@ ENTRY_POINT = ['main.py']
 OPTIONS = {
     'argv_emulation': True,
     'strip': True,
-    'iconfile': 'cooperation_puzzle_icon_262690.icns',  # uncomment to include an icon
+    'iconfile': 'macos_big_sur_safe_folder_icon_186055.icns',  # uncomment to include an icon
     'includes': ['django', 'webssh'],
     'excludes': ['_pytest', 'pdb', 'unittest', 'doctest'],
     'plist': {
