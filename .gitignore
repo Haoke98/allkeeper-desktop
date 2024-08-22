@@ -186,3 +186,4 @@ nohup.out
 /logs/
 /tests/
 /service/jumpService/migrations/
+/service/accountSystem/migrations/

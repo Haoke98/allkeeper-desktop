@@ -195,7 +195,6 @@ INSTALLED_APPS = [
     'DebtManagerSystem',
     'sortedm2m',
     'django_crontab',
-    'icloud',
     'jumpService'
 ]
 SITE_ID = 1

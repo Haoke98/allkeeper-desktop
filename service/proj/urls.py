@@ -14,7 +14,6 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 import accountSystem.urls
-import icloud.urls
 import jumpService.urls
 from django.conf.urls import include
 from django.contrib import admin
@@ -41,7 +40,6 @@ urlpatterns = [
     path('admin/doc/', include('django.contrib.admindocs.urls')),
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
     re_path('^all-keeper/', include(accountSystem.urls)),
-    re_path('^icloud/', include(icloud.urls)),
     path("favicon.ico", RedirectView.as_view(url=_STATIC_URL + 'favicon.ico')),
     re_path(r'^static/(?P<path>.*)$', serve, ({'document_root': settings.STATIC_ROOT})),
     path('sp/', include('simplepro.urls')),

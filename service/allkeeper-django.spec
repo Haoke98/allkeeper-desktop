@@ -29,7 +29,7 @@ a = Analysis(
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=[],
+    excludes=['icloud'],
     noarchive=False,
     optimize=0,
 )
