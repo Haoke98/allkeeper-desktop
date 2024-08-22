@@ -1,0 +1,1 @@
+pyinstaller service/allkeeper-django.spec --distpath=./dist/services

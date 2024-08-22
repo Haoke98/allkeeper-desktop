@@ -1,0 +1,1 @@
+./dist/AllKeeper.app/Contents/MacOS/Allkeeper
