@@ -1,5 +1,9 @@
 # allkeeper-desktop
 
+<center>
+  <img src="https://cdn.icon-icons.com/icons2/2963/PNG/512/macos_big_sur_safe_folder_icon_186055.png"/>
+</center>
+
 A desktop version for the project allkeeper(https://github.com/Haoke98/Allkeeper.git)
 ![](assets/截屏2024-08-02%2017.28.03.png)
 ![](assets/截屏2024-08-02%2017.08.14.png)
