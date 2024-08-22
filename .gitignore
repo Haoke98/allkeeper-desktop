@@ -189,3 +189,4 @@ nohup.out
 /service/accountSystem/migrations/
 /mini-apps/
 backup_*.json
+/release/
