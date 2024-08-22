@@ -51,11 +51,8 @@ def navigate_after_delay(window: webview.Window, url, delay):
 
 def on_window_start(window: webview.Window):
     port = 8000
-    print("CWD:", os.getcwd())
-    python_cli = os.path.join(os.getcwd(), '..', 'MacOS', 'python')
-    print("PythonCli:", python_cli)
     start_service(namespace="WebSSH", command=['./services/wssh', f'--port=9080', '--xsrf=False'])
-    start_service(namespace="Django", command=[python_cli, './service/manage.py', 'runserver', f'0.0.0.0:{port}'])
+    start_service(namespace="Django", command=['./services/allkeeper-django', 'runserver', f'0.0.0.0:{port}','--noreload'])
     url = f'http://127.0.0.1:{port}/bupt2018213267@Sdm98/'
     navigate_after_delay(window, url, 5)
 
