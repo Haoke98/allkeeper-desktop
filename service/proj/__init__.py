@@ -10,7 +10,6 @@ WINDOWS = 'Windows'
 LINUX = 'Linux'
 MacOS = 'Darwin'
 CURRENT_SYSTEM = platform.system()
-logging.info(f"CWD:{os.getcwd()}")
 
 if CURRENT_SYSTEM == WINDOWS:
     _DEBUG = True
