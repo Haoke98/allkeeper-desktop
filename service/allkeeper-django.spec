@@ -24,7 +24,8 @@ a = Analysis(
         'middlewares',
         'proj.log','proj.database_router',
         'jumpService.admin',
-        'accountSystem.admin'
+        'accountSystem.admin',
+        'simplepro.templatetags'
         ],
     hookspath=[],
     hooksconfig={},
