@@ -18,7 +18,6 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from .auth import login
-from .device import DeviceView, DeviceRegionView
 from .human import HumanView, HumanViewSet
 from .menu import getMenuList
 

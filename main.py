@@ -41,9 +41,11 @@ def start_service(namespace: str = "WebSSH_Service", command: list = None):
 def check_django_status(target: str):
     try:
         response = requests.get(target)
+        print("Checking status of Django server...({}) : {}".format(target, response.status_code))
         if response.status_code == 200:
             return True
-    except requests.exceptions.ConnectionError:
+    except requests.exceptions.ConnectionError as e:
+        print("Checking status of Django server...({}) : {}".format(target, e))
         return False
     return False
 
@@ -62,11 +64,16 @@ def navigate_after_delay(window: webview.Window, url, delay):
 
 def navigate2after_wait(window: webview.Window, url):
     start_time = time.time()
-    while not check_django_status(target=url):
-        time.sleep(1)  # 每隔1秒检查一次
-        print(f"Loading {url}...  ({time.time()-start_time} s)")
+    while True:
+        if check_django_status(target=url):
+            break
+        else:
+            time.sleep(1)  # 每隔1秒检查一次
+            tDlt = time.time() - start_time
+            window.load_html('<h1>Service is dynamically loaded!</h1><h2> loading ..... ({:0.2f} s)'.format(tDlt))
+            print(f"Loading {url}...  ({tDlt} s)")
 
-    print(f"Loading {url} after {time.time()-start_time} seconds.")
+    print(f"Loading {url} after {time.time() - start_time} seconds.")
     window.load_url(url)
 
 
@@ -74,8 +81,8 @@ def on_window_start(window: webview.Window):
     port = 8000
     start_service(namespace="WebSSH", command=['./services/wssh', f'--port=9080', '--xsrf=False'])
     start_service(namespace="Django",
-                  command=['./services/allkeeper-django', 'runserver', f'0.0.0.0:{port}', '--noreload'])
-    url = f'http://127.0.0.1:{port}/bupt2018213267@Sdm98/'
+                  command=['./services/allkeeper-django', 'runserver', f'127.0.0.1:{port}', '--noreload'])
+    url = f'http://127.0.0.1:{port}/admin/'
     navigate2after_wait(window, url)
 
 

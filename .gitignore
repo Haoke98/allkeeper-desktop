@@ -190,3 +190,4 @@ nohup.out
 /mini-apps/
 backup_*.json
 /release/
+/service/public/

@@ -8,14 +8,11 @@ from django.core.files.storage import default_storage
 from django.http import HttpResponse, JsonResponse, Http404, HttpResponseRedirect
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
-from minio import Minio
 from pytz import UTC
 
 from .models import IMedia, LocalMedia
-from .serializers import IMediaSerializer, LocalMediaSerializer
+from .serializers import LocalMediaSerializer
 from .services import update, create_icloud_service, collect
-from proj.secret import MINIO_STORAGE_SECRET_KEY, MINIO_STORAGE_ENDPOINT, MINIO_STORAGE_ACCESS_KEY
-from proj.settings import MINIO_STORAGE_MEDIA_BUCKET_NAME, MINIO_STORAGE_USE_HTTPS, MINIO_STORAGE_CERT_CHECK
 
 DLT = datetime.timedelta(hours=1)
 
@@ -23,15 +20,6 @@ VIDE_PLAYER_TYPE_MAP = {
     ".MP4": "video/mp4",
     ".MOV": "video/quicktime",
 }
-
-minio_client = Minio(
-    endpoint=MINIO_STORAGE_ENDPOINT,
-    access_key=MINIO_STORAGE_ACCESS_KEY,
-    secret_key=MINIO_STORAGE_SECRET_KEY,
-    secure=MINIO_STORAGE_USE_HTTPS,  # 根据你的MinIO服务器是否使用HTTPS来设置
-    cert_check=MINIO_STORAGE_CERT_CHECK
-)
-
 
 def test(request):
     """
@@ -147,13 +135,14 @@ def preview(request):
         except ValueError as e:
             if "The 'prv' attribute has no file associated with it." in str(e):
                 prv_object_name = targetObj.origin.name
-        download_url = minio_client.presigned_get_object(
-            bucket_name=MINIO_STORAGE_MEDIA_BUCKET_NAME,
-            object_name=prv_object_name,
-            expires=datetime.timedelta(minutes=5)
-        )
-        print(f"下载预签名URL: {download_url}")
-        context["prv_src"] = download_url
+        # FIXME: 修复这里改成本地缓存缩略图或者预览版内容
+        # download_url = minio_client.presigned_get_object(
+        #     bucket_name=MINIO_STORAGE_MEDIA_BUCKET_NAME,
+        #     object_name=prv_object_name,
+        #     expires=datetime.timedelta(minutes=5)
+        # )
+        # print(f"下载预签名URL: {download_url}")
+        # context["prv_src"] = download_url
         pass
     else:
         return HttpResponse(f"未知source[{source}]")

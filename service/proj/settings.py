@@ -13,13 +13,15 @@ import datetime
 import logging
 import mimetypes
 import os
-import platform
 from pathlib import Path
 
-from . import secret
-from .secret import MEDIA_ROOT, CSRF_TRUSTED_ORIGINS, MINIO_STORAGE_ENDPOINT, MINIO_STORAGE_ACCESS_KEY, \
-    MINIO_STORAGE_SECRET_KEY
+from . import _STATIC_URL
 from .simpleUISettings import *
+
+# FIXME : 改成第一次安装时自动生成并保存到用户目录下
+SECRET_KEY = 's3va_7)a.2k3jsk0ks24,d4-w!l9&v&m#9-(9xduye*@p='
+JWT_SIGNATURE = SECRET_KEY
+JWT_ISSUER = "Sadam·Sadik"
 
 SECURE_CROSS_ORIGIN_OPENER_POLICY = 'none'
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -29,6 +31,10 @@ APP_HOME_DIR = os.path.join(HOME_DIR, 'all-keeper')
 if not os.path.isdir(APP_HOME_DIR):
     os.mkdir(APP_HOME_DIR)
 
+MEDIA_ROOT = os.path.join(APP_HOME_DIR, 'media')
+if not os.path.isdir(MEDIA_ROOT):
+    os.mkdir(MEDIA_ROOT)
+
 LOG_FILE_DIR = os.path.join(APP_HOME_DIR, 'logs')
 if not os.path.exists(LOG_FILE_DIR):
     os.mkdir(LOG_FILE_DIR)
@@ -37,8 +43,6 @@ CACHE_DIR = os.path.join(APP_HOME_DIR, 'cache')
 PUBLIC_ROOT = os.path.join(BASE_DIR, 'public')
 if not os.path.exists(PUBLIC_ROOT):
     os.mkdir(PUBLIC_ROOT)
-
-from . import _STATIC_URL
 
 STATIC_URL = _STATIC_URL
 logging.info(f"STATIC_URL:{STATIC_URL}")
@@ -70,27 +74,16 @@ MEDIA_URL = '/media/'
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = secret.SECRET_KEY
+SECRET_KEY = SECRET_KEY
 os.environ['NLS_LANG'] = 'SIMPLIFIED CHINESE_CHINA.UTF8'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-from . import _DEBUG
 
-DEBUG = _DEBUG
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
 APPEND_SLASH = True
-
-ADMINS = (('Sadam·Sadik', '1903249375@qq.com'),)  # 接受报错的账号
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_USE_SSL = True
-EMAIL_HOST = 'smtp.qq.com'  # 如果是 163 改成 smtp.163.com
-EMAIL_PORT = 465
-EMAIL_HOST_USER = secret.SMTP_EMAIL  # 帐号
-EMAIL_HOST_PASSWORD = secret.SMTP_PASSWORD  # 密码(用第三方平台登陆授权码）
-SERVER_EMAIL = EMAIL_HOST_USER  # 必须要设置 不然logger中得handler：admin_Email 无法发送错误报告邮件，  SERVER_EMAIL必须和 EMAIL_HOST_USER一样才能成功发送
-DEFAULT_FROM_EMAIL = f'SadamSadik <{secret.SMTP_EMAIL}>'
 
 LOG_REQUEST_ID_HEADER = "HTTP_X_REQUEST_ID"
 GENERATE_REQUEST_ID_IF_NOT_IN_HEADER = True
@@ -249,17 +242,6 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(APP_HOME_DIR, 'database.db'),
-    },
-    'remote': {
-        'ENGINE': secret.DB_BACKEND,
-        'NAME': secret.DB_DATABASE,
-        'HOST': secret.DB_HOST,
-        'PORT': secret.DB_PORT,
-        'USER': secret.DB_USERNAME,
-        'PASSWORD': secret.DB_PASSWORD,
-        'CONN_MAX_AGE': 0,
-        'OPTIONS': {
-        },
     }
 }
 
@@ -274,7 +256,6 @@ DATABASE_APPS_MAPPING = {
     'accountSystem': 'default',
     'DebtManagerSystem': 'default',
     'icloud': 'default',
-    'logAnalyser': 'default',
     'jumpService': 'default'
 }
 # Password validation

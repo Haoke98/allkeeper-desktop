@@ -25,7 +25,6 @@ from django.views.static import serve
 from proj import settings
 
 from . import _STATIC_URL
-from .secret import ADMIN_PATH
 from .view import media
 
 # 网站标签页名称
@@ -36,7 +35,7 @@ admin.site.site_header = 'AllKeeper'
 admin.autodiscover()
 urlpatterns = [
     re_path(r'^media/(?P<path>.*)$', media),
-    path(f"{ADMIN_PATH}/", admin.site.urls),
+    path(f"admin/", admin.site.urls),
     path('admin/doc/', include('django.contrib.admindocs.urls')),
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
     re_path('^all-keeper/', include(accountSystem.urls)),

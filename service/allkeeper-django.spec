@@ -10,14 +10,12 @@ a = Analysis(
     datas=[
         # 添加 simplepro 的模板路径
         (os.path.join(site_packages_path, 'simplepro/templates'), 'simplepro/templates'),
-        # 添加 simplepro 的静态资源路径
-        (os.path.join(site_packages_path, 'simplepro/static'), 'simplepro/static'),
-        # 添加 simpleui 的静态资源路径
-        (os.path.join(site_packages_path, 'simpleui/static'), 'simpleui/static'),
         # 添加 simpleui 的模版路径
         (os.path.join(site_packages_path, 'simpleui/templates'), 'simpleui/templates'),
-        # 添加 项目公用 静态资源
-        ('common-static', 'common-static')
+        # 添加 项目自定义 的模版路径
+        ('templates', 'templates'),
+        # 把所有静态资源都重新汇集到静态文件夹里
+        ('public/static', 'public/static')
     ],
     hiddenimports=[
         'log_request_id','log_request_id.filters','log_request_id.middleware',
