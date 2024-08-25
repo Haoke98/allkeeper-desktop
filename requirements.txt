@@ -21,3 +21,4 @@ psycopg2-binary
 ffmpeg-python==0.2.0
 moviepy==1.0.3
 flask-socketio
+pyinstaller==6.10.0
