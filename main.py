@@ -29,6 +29,7 @@ if not os.path.exists(LOG_DIR):
 webssh_pids = {}
 service_pids = []
 
+
 def kill_process(pid):
     try:
         process = psutil.Process(pid)
@@ -70,7 +71,7 @@ def navigate2after_wait(window: webview.Window, url):
     while True:
         try:
             check_url = url
-            response = requests.get(check_url)
+            response = requests.get(check_url, proxies={"http": "", "https": ""})
             log = "Checking status of Django server...({}) : {}".format(check_url, response.status_code)
             logs += log + "\n"
             print(log)
