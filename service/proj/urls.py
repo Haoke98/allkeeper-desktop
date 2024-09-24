@@ -17,8 +17,10 @@ import accountSystem.urls
 import jumpService.urls
 from django.conf.urls import include
 from django.contrib import admin
+from django.contrib.auth.models import Group, User
 from django.contrib.flatpages import sitemaps
 from django.contrib.sitemaps.views import sitemap
+from django.contrib.sites.models import Site
 from django.urls import path, re_path
 from django.views.generic import RedirectView
 from django.views.static import serve
@@ -31,6 +33,12 @@ from .view import media
 admin.site.site_title = "AllKeeper"
 # 网站名称：显示在登录页和首页
 admin.site.site_header = 'AllKeeper'
+# 取消注册 Sites 模型
+admin.site.unregister(Site)
+
+# 取消注册 Group 模型
+admin.site.unregister(Group)
+admin.site.unregister(User)
 
 admin.autodiscover()
 urlpatterns = [
