@@ -43,4 +43,6 @@ urlpatterns = [
     re_path(r'^static/(?P<path>.*)$', serve, ({'document_root': settings.STATIC_ROOT})),
     path('sp/', include('simplepro.urls')),
     re_path('^jump_service/', include(jumpService.urls)),
+    re_path(r'^static/(?P<path>.*)$', serve, ({'document_root': settings.STATIC_ROOT})),
+    re_path(r'^media/(?P<path>.*)$', media)
 ]
