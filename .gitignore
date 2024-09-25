@@ -176,7 +176,6 @@ secret.py
 /accountSystem/minioTest.py
 /DigitalWorld/minioTest.py
 *pyc
-*/migrations/
 .DS_Store
 /public/
 nohup.out
@@ -185,8 +184,6 @@ nohup.out
 *.lic
 /logs/
 /tests/
-/service/jumpService/migrations/
-/service/accountSystem/migrations/
 /mini-apps/
 backup_*.json
 /release/
