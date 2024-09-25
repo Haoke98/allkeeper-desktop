@@ -58,13 +58,18 @@ class CommonTimedRotatingFileHandler(TimedRotatingFileHandler):
             self.stream = None
         # get the time that this sequence started at and make it a TimeTuple
         dfn = self.dfn
-        # 存档log 已存在处理
-        if not os.path.exists(dfn):
-            self.rotate(self.baseFilename, dfn)
-        # 备份数控制
-        if self.backupCount > 0:
-            for s in self.getFilesToDelete():
-                os.remove(s)
+        try:
+            # 存档log 已存在处理
+            if not os.path.exists(dfn):
+                self.rotate(self.baseFilename, dfn)
+            # 备份数控制
+            if self.backupCount > 0:
+                for s in self.getFilesToDelete():
+                    os.remove(s)
+        except Exception as e:
+            # 记录异常信息
+            print(f"Error during rollover: {e}")
+            return
         # 延迟处理
         if not self.delay:
             self.stream = self._open()
