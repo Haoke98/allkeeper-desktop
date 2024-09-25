@@ -185,7 +185,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'docutils',
     'accountSystem',
-    'DebtManagerSystem',
     'sortedm2m',
     'django_crontab',
     'jumpService'
