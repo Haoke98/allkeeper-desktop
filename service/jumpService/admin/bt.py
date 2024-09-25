@@ -37,8 +37,12 @@ class BtAdmin(BaseAdmin):
         return value
 
     def _url(self, obj):
+        if obj.ssl:
+            proto = "https"
+        else:
+            proto = "http"
         if obj.domain:
-            uri = "http://"
+            uri = f"{proto}://"
             if obj.basicAuthUsername and obj.basicAuthPwd:
                 uri += f"{obj.basicAuthUsername}:{obj.basicAuthPwd}@"
             uri += obj.domain
@@ -50,7 +54,7 @@ class BtAdmin(BaseAdmin):
             ips = obj.server.ips.all()
             for i, ipObj in enumerate(ips):
                 print(obj.server, ipObj.ip)
-                uri = "http://"
+                uri = f"{proto}://"
                 if obj.basicAuthUsername and obj.basicAuthPwd:
                     uri += f"{obj.basicAuthUsername}:{obj.basicAuthPwd}@"
                 uri += f"{ipObj.ip}:{obj.port}"

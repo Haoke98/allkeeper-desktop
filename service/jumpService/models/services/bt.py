@@ -14,6 +14,7 @@ class BT(BaseModel):
     basicAuthPwd = models.CharField(max_length=32, verbose_name="BasicAuth密码", null=True, blank=True)
     path = models.CharField(max_length=50, verbose_name="面板路径", null=True, blank=True)
     domain = models.URLField(verbose_name="绑定的域名", null=True, blank=True)
+    ssl = models.BooleanField(verbose_name="SSL", default=False, blank=True)
 
     class Meta:
         verbose_name = "宝塔"
