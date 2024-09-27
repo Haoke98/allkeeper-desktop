@@ -140,7 +140,7 @@ class ServiceAdmin(AjaxAdmin):
         if obj.system:
             ips = obj.system.server.ips.all()
             for i, ipObj in enumerate(ips):
-                print(obj.system, ipObj.ip)
+                # print(obj.system, ipObj.ip)
                 if obj.dashboardPort:
                     if obj.sslOn:
                         if obj.dashboardPath:
