@@ -1,4 +1,5 @@
 from . import _STATIC_URL
+
 # SIMPLE UI config.
 SIMPLEUI_DEFAULT_THEME = 'x-green.css'
 
@@ -94,17 +95,39 @@ SIMPLEUI_CONFIG = {
             ]
         },
         {
-            'name': 'GitHub',
-            'icon': 'fas fa-code',
-            'url': 'https://haoke98.github.io/AllKeeper/',
+            'name': 'GitHub源代码',
+            'icon': 'fab fa-github',
+            'url': 'https://haoke98.github.io/allKeeper-desktop/',
             'codename': 'community'
         },
         {
             'name': 'Bug反馈',
             'icon': 'fas fa-bug',
-            'url': 'https://github.com/Haoke98/AllKeeper/issues',
+            'url': 'https://haoke98.github.io/allKeeper-desktop/issues',
             'codename': 'bug_trace',
             'newTab': True
+        },
+
+        {
+            'name': '社区',
+            'icon': 'fa-solid fa-comments',
+            'codename': 'product',
+            'models': [
+                {
+                    'name': '社区官网',
+                    'url': 'https://www.0p.fit',
+                    'icon': 'fa-solid fa-globe',
+                    'codename': 'official-site',
+                    'newTab': True
+                },
+                {
+                    'name': '社区博客',
+                    'url': 'https://blog.0p.fit',
+                    'icon': 'fa-brands fa-squarespace',
+                    'codename': 'blog',
+                    'newTab': True
+                }
+            ]
         },
         {
             'name': '依赖',
@@ -114,33 +137,8 @@ SIMPLEUI_CONFIG = {
                 {
                     'name': 'DjangoAsyncAdmin',
                     'codename': 'django_async_admin',
-                    'icon': 'fas fa-bug',
-                    'models': [
-                        {
-                            'name': '文档',
-                            'url': 'https://haoke98.github.io/DjangoAsyncAdmin/'
-                        }, {
-                            'name': 'Github',
-                            'url': 'https://github.com/Haoke98/DjangoAsyncAdmin'
-                        }
-                    ]
-                }, {
-                    'name': '图标',
-                    'url': 'https://fontawesome.com/',  # TODO：后期把这个改成一个单独的页面，里面渲染出所有能够调用的图标，外加图标检索功能
-                    'icon': 'fas fa-icons',
-                    'codename': 'icon',
-                    'newTab': True
-                }, {
-                    'name': '图片转换器',
-                    'url': 'https://convert.72wo.com',
-                    'icon': 'fab fa-github',
-                    'codename': 'convert',
-                    'newTab': True
-                }, {
-                    'name': '全文检索',
-                    'url': 'https://github.com/sea-team/gofound',
-                    'icon': 'fab fa-github',
-                    'codename': 'gofound',
+                    'icon': 'fa-solid fa-code',
+                    'url': 'https://github.com/Haoke98/DjangoAsyncAdmin',
                     'newTab': True
                 }
             ]
