@@ -1,10 +1,19 @@
 from django.contrib import admin
+from django.forms import ModelForm
+
 from django.utils.safestring import mark_safe
 from simplepro.admin import FieldOptions
 
 from accountSystem.admin.base import BaseAccountAdmin
-from accountSystem.forms import AccountForm
 from accountSystem.models import Account, Tel, Email
+
+__all__ = ('AccountAdmin',)
+
+
+class AccountForm(ModelForm):
+    class Meta:
+        model = Account
+        fields = ['group', 'platform', 'username', 'pwd', 'tels', 'emails', 'wechat', 'info', 'name', 'url', 'types']
 
 
 @admin.register(Account)
