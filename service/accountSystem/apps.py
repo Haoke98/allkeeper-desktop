@@ -14,5 +14,4 @@ class AccountSystemConfig(AppConfig):
         from .admin.platform import PlatformAdmin, URLAdmin
         from .admin.scripts import ScriptAdmin
         from .admin.tel import TelAdmin
-        from .admin.trade import CapitalAccountAdmin, TransactionAdmin
         from .admin.wechat import WechatAdmin
