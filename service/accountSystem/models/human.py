@@ -6,8 +6,6 @@ from simplepro.lib import pkHelper
 from simplepro.models import BaseModel
 
 from utils import zodiacHelper
-from .weibo import Weibo
-
 
 # Create your models here.
 class Human(BaseModel):
@@ -21,8 +19,6 @@ class Human(BaseModel):
     zodiac = models.CharField(verbose_name='星座', max_length=50, null=True, blank=True)
     birthplace = models.CharField(verbose_name="出生地", null=True, blank=True, max_length=255)
     collage = models.CharField(verbose_name="毕业院校", null=True, blank=True, max_length=100)
-    WB = models.ForeignKey(to=Weibo, on_delete=models.CASCADE, null=True, blank=True, verbose_name="微博账号",
-                           help_text="微博首页：https://weibo.com/u/{ID}")
     DY_home = models.CharField(max_length=255, verbose_name="抖音首页", help_text="抖音首页：https://www.douyin.com/user/{系统ID}",
                                null=True, blank=True, unique=True)
     DY_ID = models.CharField(max_length=255, verbose_name="抖音ID", null=True, blank=True, unique=True)

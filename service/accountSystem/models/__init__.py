@@ -9,4 +9,3 @@ from .scripts import Script
 from .breath import BreathInfo
 from .trade import CapitalAccount, Transaction, CapitalAccountType
 from .marketsubject import MarketSubject
-from .weibo import Weibo

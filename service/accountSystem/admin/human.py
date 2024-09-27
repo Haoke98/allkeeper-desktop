@@ -34,10 +34,9 @@ class HumanAdmin(admin.ModelAdmin):
                                    'collage',
                                    'DY_ID',
                                    'dy_home',
-                                   'WB',
                                    'license_plate_number', 'birthplace', 'id_card_front', 'id_card_back', '_count']
     search_fields = ['name', 'idCardNum', 'license_plate_number', 'DY_ID', 'DY_home', 'birthplace']
-    autocomplete_fields = ['WB', ]
+    autocomplete_fields = []
     list_filter = ['sex', 'birthday', 'zodiac', 'ethnic', 'collage']
     list_per_page = 14
     fields = ['name', 'idCardNum', 'sex', 'ethnic', 'birthday', 'zodiac', 'birthplace', 'collage', 'WB', 'DY_home',
