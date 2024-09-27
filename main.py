@@ -133,9 +133,18 @@ def on_moved(x, y):
 
 def on_window_start(window: webview.Window):
     port = 8000
-    start_service(namespace="WebSSH", command=['./services/wssh', f'--port=9080', '--xsrf=False'])
-    start_service(namespace="Django",
-                  command=['./services/allkeeper-django', 'runserver', f'127.0.0.1:{port}', '--noreload'])
+    # 检查操作系统是否为Windows
+    if os.name == 'nt':
+        print("当前系统是Windows")
+        print("CWD:", os.getcwd())
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        service_dir = os.path.join(base_dir, "services")
+        start_service(namespace="WebSSH", command=[os.path.join(service_dir,'wssh.exe'), f'--port=9080', '--xsrf=False'])
+        start_service(namespace="Django", command=[os.path.join(service_dir,'allkeeper-django.exe'), 'runserver', f'127.0.0.1:{port}', '--noreload'])
+    else:
+        print("当前系统不是Windows")
+        start_service(namespace="WebSSH", command=['./services/wssh', f'--port=9080', '--xsrf=False'])
+        start_service(namespace="Django", command=['./services/allkeeper-django', 'runserver', f'127.0.0.1:{port}', '--noreload'])
     url = f'http://127.0.0.1:{port}/admin/'
     navigate2after_wait(window, url)
 
