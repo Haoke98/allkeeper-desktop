@@ -1,1 +1,1 @@
-pyinstaller main.py --add-data .\dist\services:.\services
+pyinstaller main.spec --distpath=./dist
