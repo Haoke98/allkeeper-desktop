@@ -86,7 +86,7 @@ setup(
     app=ENTRY_POINT,
     packages=['service', ],
     include_package_data=True,
-    data_files=[] + tree_replace("dist/services", "services"),
+    data_files=[] + tree_replace("services", "services"),
     options={'py2app': OPTIONS},
     setup_requires=['py2app'],
 )

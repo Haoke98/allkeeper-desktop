@@ -188,3 +188,4 @@ nohup.out
 backup_*.json
 /release/
 /service/public/
+/services/

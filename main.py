@@ -161,7 +161,7 @@ def main(port):
     window.events.restored += on_restored
     window.events.resized += on_resized
     window.events.moved += on_moved
-    webview.start(on_window_start, args=(window,), ssl=True, debug=True)
+    webview.start(on_window_start, args=(window,), ssl=True)
     print("Command line arguments (after execute):", sys.argv)
     print("AllKeeperDesktop is now running!")
 
