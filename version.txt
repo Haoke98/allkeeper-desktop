@@ -33,7 +33,7 @@ VSVersionInfo(
             StringStruct(u'FileDescription', u'密码和密钥保存工具'),    # 文件说明
             StringStruct(u'FileVersion', u'2024.9.30.12'),
             StringStruct(u'InternalName', u'SVN'),
-            StringStruct(u'LegalCopyright', u'@Copyright 新疆数智创想软件开发工作室有限公司版权所有'), #版权
+            StringStruct(u'LegalCopyright', u'Copyright © 2024 新疆数智创想软件开发工作室. All rights reserved.'), #版权
             StringStruct(u'OriginalFilename', u'AllKeeper.exe'), #原始文件名
             StringStruct(u'ProductName', u'AllKeeper'),      #产品名称
             StringStruct(u'ProductVersion', u'1.1.0')])    #产品版本

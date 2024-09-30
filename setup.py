@@ -7,53 +7,16 @@
 @disc:
 ======================================="""
 import logging
-import os
-from importlib.metadata import version
 
-from pip._internal.network.session import PipSession
-from pip._internal.req import parse_requirements
 from setuptools import setup
 
+from setup_utils import parse_version_file, _parse_requirements, tree_replace
 
-def _parse_requirements(file_path):
-    # 获取pip的版本
-    pip_ver = version('pip')
-    pip_version = list(map(int, pip_ver.split('.')[:2]))
-
-    # 根据pip的版本选择不同的方法来解析requirements
-    if pip_version >= [20, 0]:  # 这里的版本号需要根据实际情况调整
-        requirements = parse_requirements(
-            file_path,
-            session=PipSession()
-        )
-    else:
-        requirements = parse_requirements(file_path)
-
-    # 返回requirements列表
-    return [str(req.requirement) for req in requirements]
-
-
-def tree(src):
-    resp = []
-    for (_root, dirs, files) in os.walk(os.path.normpath(src)):
-        fps = []
-        for f in files:
-            fp = os.path.join(_root, f)
-            fps.append(fp)
-        resp.append((_root, fps))
-    return resp
-
-
-def tree_replace(src_folder, dst_folder):
-    resp = []
-    for (_root, dirs, files) in os.walk(os.path.normpath(src_folder)):
-        fps = []
-        for f in files:
-            fp = os.path.join(_root, f)
-            fps.append(fp)
-        resp.append((dst_folder, fps))
-    return resp
-
+# 获取版本信息
+file_version, product_version, copyright_text = parse_version_file('version.txt')
+print("File version({}): {}".format(type(file_version), file_version))
+print("Product version({}): {}".format(type(product_version), product_version))
+print("Copyright text({}): {}".format(type(copyright_text), copyright_text))
 
 # parse_requirements() returns generator of pip.req.InstallRequirement objects
 try:
@@ -75,9 +38,9 @@ OPTIONS = {
         'CFBundleDisplayName': 'AllKeeper',
         'CFBundleGetInfoString': "AllKeeper",
         'CFBundleIdentifier': 'com.0p.AllKeeper',
-        'CFBundleVersion': "2024.8.22.19",
-        'CFBundleShortVersionString': "1.0.0",
-        'NSHumanReadableCopyright': 'Copyright © 2024 新疆数智创想软件开发工作室. All rights reserved.',
+        'CFBundleVersion': file_version,  # 使用从 version.txt 中解析的 FileVersion
+        'CFBundleShortVersionString': product_version,  # 使用从 version.txt 中解析的 ProductVersion
+        'NSHumanReadableCopyright': copyright_text,  # 使用从 version.txt 中解析的版权信息
     }
 }
 
