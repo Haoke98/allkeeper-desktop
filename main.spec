@@ -35,5 +35,6 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon='macos_big_sur_safe_folder_icon_186055_512x512x32.ico'
+    icon='macos_big_sur_safe_folder_icon_186055_512x512x32.ico',
+    version='version.txt',  # 指定版本信息文件
 )
