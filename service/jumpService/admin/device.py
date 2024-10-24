@@ -7,6 +7,7 @@
 @disc:
 ======================================="""
 from django.contrib import admin
+from simplepro.admin import FieldOptions
 
 from ..models import Device, DeviceStatus
 
@@ -14,7 +15,10 @@ from ..models import Device, DeviceStatus
 @admin.register(Device)
 class DeviceAdmin(admin.ModelAdmin):
     list_display = ['id', 'brand', 'remark', 'createdAt', 'updatedAt', 'deletedAt']
-    search_fields = ['id', 'status', 'remark', ]
+    search_fields = ['id', 'remark', ]
+    fields_options = {
+        'id': FieldOptions.UUID
+    }
 
 
 @admin.register(DeviceStatus)
@@ -22,3 +26,6 @@ class DeviceStatusAdmin(admin.ModelAdmin):
     list_display = ['id', 'content', 'device', 'ip', 'errno', 'errstr', 'createdAt']
     list_filter = ['content', 'device', 'ip', 'errno', 'createdAt']
     search_fields = ['id', 'content', 'device', 'ip', 'errno', 'createdAt']
+    fields_options = {
+        'id': FieldOptions.UUID
+    }

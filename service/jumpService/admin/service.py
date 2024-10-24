@@ -64,7 +64,13 @@ class ServiceTypeAdmin(BaseAdmin):
             'min_width': '320px',
             'align': 'center'
         },
-        'name': FieldOptions.IP_ADDRESS,
+        'name': {
+            'min_width': '220px',
+            'align': 'left',
+            "show_overflow_tooltip": True,
+            "resizeable": True,
+            "fixed": "left"
+        },
         'port': {
             'min_width': "110px",
             'align': 'center'
