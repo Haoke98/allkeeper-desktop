@@ -20,8 +20,8 @@ class OperationSystemImage(BaseModel):
     version = fields.CharField(max_length=50, verbose_name="版本")
 
     isLTS = models.BooleanField(default=False, verbose_name="LTS")
-    arch = fields.CharField(max_length=50, verbose_name="ARCH", null=True, help_text="什么架构?比如: 32bit or 64bit",
-                            blank=True)
+    arch = fields.CharField(max_length=50, verbose_name="ARCH", null=True, blank=True,
+                            placeholder="什么架构?比如: 32bit or 64bit")
     iso = models.FileField(verbose_name="镜像", upload_to='system_images', null=True, blank=True)
 
     class Meta:

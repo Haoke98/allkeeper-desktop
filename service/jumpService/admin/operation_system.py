@@ -22,6 +22,7 @@ class OperationSystemImageAdmin(admin.ModelAdmin):
     list_filter = ['name', 'arch', 'isLTS', 'updatedAt', 'createdAt']
     search_fields = ['version', 'remark']
     ordering = ['-updatedAt']
+    fields = ['name', 'version', 'isLTS', 'arch', 'iso', 'remark']
     fields_options = {
         'id': FieldOptions.UUID,
         'code': {
@@ -64,7 +65,7 @@ class UserInlineAdmin(admin.TabularInline):
 @admin.register(OperationSystem)
 class OperationSystemAdmin(BaseAdmin):
     list_display = ['id', 'image', 'server', 'open_webssh', 'sshPort',
-                                                            'updatedAt', 'createdAt', 'deletedAt']
+                    'updatedAt', 'createdAt', 'deletedAt']
     list_filter = ['server', 'image', 'server__remark']
     search_fields = ['server__code', 'server__remark', 'server__ips__ip']
     ordering = ('-updatedAt',)
