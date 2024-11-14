@@ -16,26 +16,57 @@ from .devices import ServerNew
 
 class OperationSystemImage(BaseModel):
     id = fields.CharField(max_length=48, primary_key=True, editable=False, default=pkHelper.uuid_generator)
-    name = fields.CharField(max_length=50, verbose_name="名称")
-    version = fields.CharField(max_length=50, verbose_name="版本")
 
+    # Basic OS Info
+    name = fields.CharField(max_length=50, verbose_name="系统分类",
+                            placeholder="例如: Ubuntu, CentOS, Windows, MacOS")
+    series = fields.CharField(max_length=50, verbose_name="系列",
+                              placeholder="例如: Windows 10, CentOS 7, Ubuntu 24.04",
+                              null=True)
+    version = fields.CharField(max_length=50, verbose_name="版本号",
+                               placeholder="例如: 22H2, 7, 24.04")
+
+    # Additional Version Info
+    build_number = fields.CharField(max_length=50, verbose_name="内部版本号",
+                                    placeholder="例如: 19045.5011, 3.10.0-1160.108.1.el7.x86_64",
+                                    null=True, blank=True)
+    code_name = fields.CharField(max_length=50, verbose_name="版本代号",
+                                 placeholder="例如: Noble Numbat, Core",
+                                 null=True, blank=True)
+
+    # System Architecture
+    arch = fields.CharField(max_length=50, verbose_name="架构",
+                            placeholder="例如: x86_64, amd64, arm64",
+                            null=True, blank=True)
+
+    # LTS Status
     isLTS = models.BooleanField(default=False, verbose_name="LTS")
-    arch = fields.CharField(max_length=50, verbose_name="ARCH", null=True, blank=True,
-                            placeholder="什么架构?比如: 32bit or 64bit")
-    iso = models.FileField(verbose_name="镜像", upload_to='system_images', null=True, blank=True)
+
+    # Installation Media
+    iso = models.FileField(verbose_name="安装镜像", upload_to='system_images',
+                           null=True, blank=True)
 
     class Meta:
         verbose_name = "操作系统镜像"
         verbose_name_plural = verbose_name
         constraints = [
-            models.UniqueConstraint(fields=['name', 'version', 'arch'], name="operation_system_name_version_unique")
+            models.UniqueConstraint(
+                fields=['name', 'series', 'version', 'build_number', 'arch'],
+                name="operation_system_unique"
+            )
         ]
 
     def __str__(self):
-        _res = f"{self.name}{self.version}"
+        components = [self.name]
+        if self.series:
+            components.append(self.series)
+        if self.version:
+            components.append(self.version)
+        if self.build_number:
+            components.append(f"({self.build_number})")
         if self.arch:
-            return f"{_res}-{self.arch}"
-        return _res
+            components.append(f"[{self.arch}]")
+        return " ".join(components)
 
 
 class OperationSystem(BaseModel):

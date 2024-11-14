@@ -18,11 +18,37 @@ from ..models import OperationSystem, OperationSystemImage, IPAddress, SystemUse
 
 @admin.register(OperationSystemImage)
 class OperationSystemImageAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'version', 'arch', 'isLTS', 'updatedAt', 'createdAt', 'deletedAt']
-    list_filter = ['name', 'arch', 'isLTS', 'updatedAt', 'createdAt']
-    search_fields = ['version', 'remark']
+    list_display = (
+        'id', 'name', 'series', 'version', 'build_number', 'arch', 'isLTS', 'updatedAt', 'createdAt', 'deletedAt')
+    list_filter = ('name', 'series', 'version', 'arch', 'isLTS', 'updatedAt', 'createdAt', 'deletedAt')
+    search_fields = ('name', 'series', 'version', 'build_number', 'code_name')
     ordering = ['-updatedAt']
-    fields = ['name', 'version', 'isLTS', 'arch', 'iso', 'remark']
+    fieldsets = (
+        ('基本信息', {
+            'fields': (
+                'name',
+                'series',
+                'version',
+            )
+        }),
+        ('版本详情', {
+            'fields': (
+                'build_number',
+                'code_name',
+                'arch',
+                'isLTS',
+            )
+        }),
+        ('安装介质', {
+            'fields': ('iso',),
+        }),
+    )
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj:  # 编辑时
+            return ('id',)
+        return ()  # 新建时没有只读字段
+
     fields_options = {
         'id': FieldOptions.UUID,
         'code': {
@@ -34,11 +60,19 @@ class OperationSystemImageAdmin(admin.ModelAdmin):
         'updatedAt': FieldOptions.DATE_TIME,
         'deletedAt': FieldOptions.DATE_TIME,
         'name': {
-            'min_width': '280px',
+            'min_width': '200px',
+            'align': 'left'
+        },
+        'series': {
+            'min_width': '240px',
             'align': 'left'
         },
         'version': {
             'min_width': '180px',
+            'align': 'left'
+        },
+        'build_number': {
+            'min_width': '200px',
             'align': 'left'
         },
         'arch': {
@@ -120,7 +154,7 @@ class OperationSystemAdmin(BaseAdmin):
             'align': 'center'
         },
         'image': {
-            'min_width': '160px',
+            'min_width': '280px',
             'align': 'left',
             "show_overflow_tooltip": True
         },

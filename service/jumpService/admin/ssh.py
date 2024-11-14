@@ -8,6 +8,7 @@ from ..models import SystemUser
 class SystemUserAdmin(BaseAdmin):
     list_display = ['id', 'system', 'username', 'password', 'group', 'owner', 'updatedAt', 'createdAt']
     list_filter = ['hasRootPriority', 'system', 'owner', 'group']
+    ordering = ['-updatedAt']
     fields = ['owner', 'system', 'username', 'password', 'group', 'info']
     search_fields = ['username', 'password']
     actions = ['migrate_service2server']
@@ -36,8 +37,9 @@ class SystemUserAdmin(BaseAdmin):
         'createdAt': FieldOptions.DATE_TIME,
         'updatedAt': FieldOptions.DATE_TIME,
         'system': {
-            'min_width': '300px',
-            'align': 'left'
+            'min_width': '360px',
+            'align': 'left',
+            "show_overflow_tooltip": True
         },
         'server': {
             'min_width': '300px',
