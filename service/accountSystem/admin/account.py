@@ -13,12 +13,14 @@ __all__ = ('AccountAdmin',)
 class AccountForm(ModelForm):
     class Meta:
         model = Account
-        fields = ['group', 'platform', 'username', 'pwd', 'tels', 'emails', 'wechat', 'info', 'name', 'url', 'types']
+        fields = ['group', 'platform', 'username', 'pwd', 'tels', 'emails', 'wechat', 'info', 'name', 'url', 'types',
+                  'remark']
 
 
 @admin.register(Account)
 class AccountAdmin(BaseAccountAdmin):
-    list_display = ['id', 'group', 'platform', 'username', 'pwd', 'url', '_tels', '_emails', 'wechat', '_info',
+    list_display = ['id', 'group', 'platform', 'username', 'pwd', 'url', '_tels', '_emails', 'wechat', 'remark',
+                    '_info',
                     'name'
                     ]
     date_hierarchy = 'updatedAt'
