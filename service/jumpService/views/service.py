@@ -23,29 +23,6 @@ def get_users(request):
     PASSWORD_PLACEHOLDER = '* * * * * * * * * *'
     html_str = '<table border="1">'
     html_str += "<thead><td>ID</td><td>用户名</td><td>密码</td><td>操作</td><td>备注</td></thead>"
-    html_str += "<tbody>"
-    for user in users:
-        html_str += '''
-        <tr>
-            <td>%s</td>
-            <td>%s</td>
-            <td>
-                <span id='password-display-%s'>%s</span>
-                <span id='password-%s' style='display:none;'>%s</span>
-            </td>
-            <td>
-                <button onclick='copyUsername(\"%s\")'>复制用户名</button>
-                <button onclick='copyPassword(\"%s\")'>复制密码</button>
-                <button onclick='togglePassword(\"%s\")'>预览密码</button>
-            </td>
-            <td>%s</td>
-        </tr>''' % (
-            user.id, escapejs(user.username), user.id, PASSWORD_PLACEHOLDER,user.id, escapejs(user.password), 
-            escapejs(user.username),
-            user.id,
-            user.id,
-            escapejs(user.remark))
-    html_str += "</tbody></table>"
     html_str += """
     <style>
         table {
@@ -56,9 +33,15 @@ def get_users(request):
             padding: 10px;  /* 添加内边距 */
             text-align: left;  /* 左对齐 */
             border: 1px solid #ddd;  /* 添加边框 */
+            overflow: hidden;  /* 隐藏溢出内容 */
+            white-space: nowrap;  /* 不换行 */
+            text-overflow: ellipsis;  /* 超出部分用省略号表示 */
         }
         th {
             background-color: #f2f2f2;  /* 表头背景色 */
+        }
+        .password-column {
+            width: 150px;  /* 设置密码列的固定宽度 */
         }
         .toast {
             visibility: hidden;  /* 默认隐藏 */
@@ -88,6 +71,27 @@ def get_users(request):
         }
     </style>
     """
+    html_str += "<tbody>"
+    for user in users:
+        html_str += '''
+        <tr>
+            <td title="%s">%s</td>
+            <td title="%s">%s</td>
+            <td class="password-column">
+                <span id='password-display-%s'>%s</span>
+                <span id='password-%s' style='display:none;'>%s</span>
+            </td>
+            <td>
+                <button onclick='copyUsername(\"%s\")'>复制用户名</button>
+                <button onclick='copyPassword(\"%s\")'>复制密码</button>
+                <button onclick='togglePassword(\"%s\")'>预览密码</button>
+            </td>
+            <td title="%s">%s</td>
+        </tr>''' % (
+            user.id, user.id, escapejs(user.username), escapejs(user.username), 
+            user.id, PASSWORD_PLACEHOLDER, user.id, escapejs(user.password), 
+            escapejs(user.username), user.id, user.id, escapejs(user.remark), escapejs(user.remark))
+    html_str += "</tbody></table>"
     html_str += """
     <script>
     document.addEventListener('DOMContentLoaded', function() {
