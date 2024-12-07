@@ -223,7 +223,7 @@ class ServiceAdmin(AjaxAdmin):
     def _user_management(self, obj):
         # count = ServiceUser.objects.filter(service=obj).count()
         modal = ModalDialog()
-        modal.width = "800"
+        modal.width = "1400"
         modal.height = "400"
         # 这个是单元格显示的文本
         modal.cell = f'<el-link type="primary">管理用户</el-link>'

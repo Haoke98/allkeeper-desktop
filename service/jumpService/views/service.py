@@ -41,7 +41,8 @@ def get_users(request):
             background-color: #f2f2f2;  /* 表头背景色 */
         }
         .password-column {
-            width: 150px;  /* 设置密码列的固定宽度 */
+            width: 200px;  /* 设置密码列的固定宽度 */
+            text-align: center;
         }
         .toast {
             visibility: hidden;  /* 默认隐藏 */
@@ -88,9 +89,9 @@ def get_users(request):
             </td>
             <td title="%s">%s</td>
         </tr>''' % (
-            user.id, user.id, escapejs(user.username), escapejs(user.username), 
-            user.id, PASSWORD_PLACEHOLDER, user.id, escapejs(user.password), 
-            escapejs(user.username), user.id, user.id, escapejs(user.remark), escapejs(user.remark))
+            user.id, user.id, user.username, user.username, 
+            user.id, PASSWORD_PLACEHOLDER, user.id, user.password, 
+            user.username, user.id, user.id, escapejs(user.remark), escapejs(user.remark))
     html_str += "</tbody></table>"
     html_str += """
     <script>
