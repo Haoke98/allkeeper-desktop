@@ -47,12 +47,68 @@ def get_users(request):
             escapejs(user.remark))
     html_str += "</tbody></table>"
     html_str += """
+    <style>
+        table {
+            width: 100%;  /* 使表格宽度自适应 */
+            border-collapse: collapse;  /* 合并边框 */
+        }
+        th, td {
+            padding: 10px;  /* 添加内边距 */
+            text-align: left;  /* 左对齐 */
+            border: 1px solid #ddd;  /* 添加边框 */
+        }
+        th {
+            background-color: #f2f2f2;  /* 表头背景色 */
+        }
+        .toast {
+            visibility: hidden;  /* 默认隐藏 */
+            min-width: 250px;  /* 最小宽度 */
+            margin-left: -125px;  /* 居中 */
+            background-color: #333;  /* 背景色 */
+            color: #fff;  /* 字体颜色 */
+            text-align: center;  /* 中间对齐 */
+            border-radius: 2px;  /* 圆角 */
+            padding: 16px;  /* 内边距 */
+            position: fixed;  /* 固定位置 */
+            z-index: 1;  /* 层级 */
+            left: 50%;  /* 居中 */
+            bottom: 30px;  /* 距离底部 */
+        }
+        .toast.show {
+            visibility: visible;  /* 显示 */
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;  /* 动画效果 */
+        }
+        @keyframes fadein {
+            from {bottom: 0; opacity: 0;}  /* 从底部渐变 */
+            to {bottom: 30px; opacity: 1;}  /* 到达目标位置 */
+        }
+        @keyframes fadeout {
+            from {bottom: 30px; opacity: 1;}  /* 从目标位置渐变 */
+            to {bottom: 0; opacity: 0;}  /* 到达底部 */
+        }
+    </style>
+    """
+    html_str += """
     <script>
     document.addEventListener('DOMContentLoaded', function() {
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerText = message;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.className = 'toast show';
+            }, 100);
+            setTimeout(() => {
+                toast.className = 'toast';
+                document.body.removeChild(toast);
+            }, 3000);
+        }
+
         function copyPassword(userId) {
             const password = document.getElementById('password-' + userId).innerText;
             navigator.clipboard.writeText(password).then(() => {
-                alert('密码已复制到剪贴板');
+                showToast('密码已复制到剪贴板');
             }).catch(err => {
                 console.error('复制失败:', err);
             });
@@ -60,7 +116,7 @@ def get_users(request):
 
         function copyUsername(username) {
             navigator.clipboard.writeText(username).then(() => {
-                alert('用户名已复制到剪贴板');
+                showToast('用户名已复制到剪贴板');
             }).catch(err => {
                 console.error('复制失败:', err);
             });
