@@ -86,12 +86,13 @@ def get_users(request):
                 <button onclick='copyUsername(\"%s\")'>复制用户名</button>
                 <button onclick='copyPassword(\"%s\")'>复制密码</button>
                 <button onclick='togglePassword(\"%s\")'>预览密码</button>
+                <a href="/admin/jumpService/serviceuser/%s/change/">编辑</a>
             </td>
             <td title="%s">%s</td>
         </tr>''' % (
-            user.id, user.id, user.username, user.username, 
-            user.id, PASSWORD_PLACEHOLDER, user.id, user.password, 
-            user.username, user.id, user.id, escapejs(user.remark), escapejs(user.remark))
+            user.id, user.id, user.username, user.username,
+            user.id, PASSWORD_PLACEHOLDER, user.id, user.password,
+            user.username, user.id, user.id, user.id, escapejs(user.remark), escapejs(user.remark))
     html_str += "</tbody></table>"
     html_str += """
     <script>
