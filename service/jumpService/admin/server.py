@@ -61,7 +61,6 @@ class ServerAdmin(BaseAdmin):
         # IPAddress.objects
         res = ""
         for ip in obj.ips.all():
-            print(ip.net, ip.ip)
             res += f'<a href="{ip.ip}">{ip.ip}</a>' + "<br/>"
         return res
 
