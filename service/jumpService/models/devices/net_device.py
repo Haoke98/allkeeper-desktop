@@ -22,7 +22,6 @@ class NetDevice(Device):
 
     def __str__(self):
         # 获取所有子类模型
-        concrete_class = None
         for related_object in self._meta.related_objects:
             if related_object.one_to_one and related_object.field.remote_field.parent_link:
                 try:
@@ -31,7 +30,7 @@ class NetDevice(Device):
                         return str(concrete_instance)
                 except related_object.related_model.DoesNotExist:
                     continue
-                    
+
         # 如果没有找到子类实例，使用默认的字符串格式
         if self.remark:
             return f"网络设备({self.id},{self.remark})"

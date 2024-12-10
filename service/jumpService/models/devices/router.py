@@ -19,3 +19,8 @@ class Router(ServerNew):
     class Meta:
         verbose_name = "路由器"
         verbose_name_plural = verbose_name
+
+    def __str__(self):
+        if self.remark:
+            return f"路由器({self.remark})"
+        return f"路由器({self.id})"

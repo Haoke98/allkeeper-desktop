@@ -56,6 +56,15 @@ class ServerNew(NetDevice):
         verbose_name_plural = verbose_name
 
     def __str__(self):
+        # 获取所有子类模型
+        for related_object in self._meta.related_objects:
+            if related_object.one_to_one and related_object.field.remote_field.parent_link:
+                try:
+                    concrete_instance = getattr(self, related_object.name)
+                    if concrete_instance:
+                        return str(concrete_instance)
+                except related_object.related_model.DoesNotExist:
+                    continue
         if self.code:
             if self.remark:
                 return f"服务器({self.code},{self.remark})"
