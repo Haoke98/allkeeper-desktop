@@ -1,2 +1,3 @@
-python service/manage.py collectstatic
-pyinstaller service/allkeeper-django.spec --distpath=./services
+cd service
+python ./manage.py collectstatic
+pyinstaller ./allkeeper-django.spec --distpath=./services

@@ -161,7 +161,6 @@ def on_window_start(window: webview.Window, dev_mode: bool):
 
 @click.command()
 @click.option('--port', default=8000, type=int, help='The port of the Django service')
-# @click.option('--dev', default=False, type=bool, help='The port of the Django service')
 @click.option('--dev', flag_value=True, default=False, help='Run the service in development mode')
 def main(port, dev):
     window = webview.create_window('All-Keeper', "http://localhost:9080", width=1400, height=1000)
