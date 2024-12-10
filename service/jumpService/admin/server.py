@@ -1,6 +1,7 @@
 import errno
 import socket
 import threading
+from importlib.metadata import Deprecated
 
 from django.contrib import admin
 from django.db.models import QuerySet
@@ -42,8 +43,8 @@ class ServerStatusAdmin(admin.ModelAdmin):
 
 @admin.register(ServerNew)
 class ServerAdmin(BaseAdmin):
-    list_display = ["id", 'code', 'system_count', 'bios', 'cabinet', 'remark', 'hoster',
-                    "mac", "updatedAt", "createdAt", "deletedAt"
+    list_display = ["id", 'code', 'system_count', 'cabinet', "hosts", 'remark', 'bios',
+                    "mac", 'hoster', "updatedAt", "createdAt", "deletedAt"
                     ]
     list_display_links = ['remark', 'hoster']
     list_filter = ['hoster', 'cabinet__room', 'cabinet', 'updatedAt', 'createdAt', 'deletedAt']
@@ -52,9 +53,17 @@ class ServerAdmin(BaseAdmin):
     autocomplete_fields = []
     list_per_page = 10
     fields = ['code', 'cabinet', 'hoster', 'bios', 'mac', 'remark', 'info']
-    actions = ['sync', 'migrate', 'sync_status']
+    actions = ['migrate', 'sync_status']
     inlines = [IPAddressInlineAdmin]
     ordering = ('-updatedAt',)
+
+    def hosts(self, obj):
+        # IPAddress.objects
+        res = ""
+        for ip in obj.ips.all():
+            print(ip.net, ip.ip)
+            res += f'<a href="{ip.ip}">{ip.ip}</a>' + "<br/>"
+        return res
 
     # inlines = [ServerUserInlineAdmin]
     @button(type='danger', short_description='同步状态', enable=True)
@@ -71,6 +80,7 @@ class ServerAdmin(BaseAdmin):
             'msg': f'同步已开始'
         }
 
+    # FIXME: 该移除了, 当时的数据结构升级代码, 没有用了
     @button(type='danger', short_description='新旧数据同步', enable=True, confirm="您确定要生成吗？")
     def sync(self, request, queryset):
         iService = None
@@ -157,7 +167,7 @@ class ServerAdmin(BaseAdmin):
             'min_width': '180px',
             'align': 'left'
         },
-        'ip': {
+        'hosts': {
             'min_width': '200px',
             'align': 'center'
         },
