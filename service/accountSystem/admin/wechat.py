@@ -16,6 +16,48 @@ class WechatAdmin(BaseAdmin):
     autocomplete_fields = list_filter
     list_per_page = 8
     actions = []
+    fields_options = {
+        '_id': {
+            'width': '150px',
+            'align': 'left'
+        },
+        'createdAt': {
+            'width': '180px',
+            'align': 'left'
+        },
+        'updatedAt': {
+            'width': '180px',
+            'align': 'left'
+        },
+        'deletedAt': {
+            'width': '180px',
+            'align': 'left'
+        },
+        '_tel': {
+            'width': '150px',
+            'align': 'left'
+        },
+        '_password': {
+            'width': '150px',
+            'align': 'center'
+        },
+        'nickName': {
+            'width': '120px',
+            'align': 'left'
+        },
+        'email': {
+            'width': '200px',
+            'align': 'left'
+        },
+        'group': {
+            'width': '150px',
+            'align': 'left'
+        },
+        'remark': {
+            'width': '240px',
+            'align': 'left'
+        },
+    }
 
     def _id(self, obj):
         return BaseAdmin.username(obj.id)
