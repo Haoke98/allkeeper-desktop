@@ -44,7 +44,6 @@ def start_service(namespace: str = "WebSSH_Service", command: list = None):
     # 启动服务进程
     stdout_fp = os.path.join(LOG_DIR, f"{namespace}_stdout.txt")
     stderr_fp = os.path.join(LOG_DIR, f"{namespace}_stderr.txt")
-    # 请根据实际情况替换webssh命令和参数
     with open(stdout_fp, "w") as stdout_f, open(stderr_fp, "w") as stderr_f:
         process = subprocess.Popen(command, stdout=stdout_f, stderr=stderr_f, text=True)
         pidPF = os.path.join(APP_HOME_DIR, f"{namespace}.pid")
@@ -132,29 +131,38 @@ def on_moved(x, y):
     print('pywebview window is moved. new coordinates are x: {x}, y: {y}'.format(x=x, y=y))
 
 
-def on_window_start(window: webview.Window, dev_mode: bool):
+def on_window_start(window: webview.Window, dev_mode: bool, lan_access: bool):
     port = 8000
+    # 根据是否允许局域网访问设置host
+    host = '0.0.0.0' if lan_access else '127.0.0.1'
+    
     if dev_mode:
-        start_service(namespace="WebSSH", command=['wssh', f'--port=9080', '--xsrf=False'])
-        # FIXME: 这里的Python可执行文件的绝对位置得改成自动获取
+        start_service(namespace="WebSSH", command=['wssh', f'--port=9080', '--xsrf=False', f'--address={host}'])
         manage_script = os.path.join(BASE_DIR, 'service', 'manage.py')
-        start_service(namespace="Django", command=[f'/Users/shadikesadamu/anaconda3/envs/django_async_admin/bin/python', manage_script, 'runserver', f'127.0.0.1:{port}'])
+        start_service(namespace="Django", 
+                     command=[f'/Users/shadikesadamu/anaconda3/envs/django_async_admin/bin/python', 
+                             manage_script, 'runserver', 
+                             f'{host}:{port}'])
     else:
-        # 检查操作系统是否为Windows
         if os.name == 'nt':
             print("当前系统是Windows")
             print("CWD:", os.getcwd())
             service_dir = os.path.join(BASE_DIR, "services")
             start_service(namespace="WebSSH",
-                          command=[os.path.join(service_dir, 'wssh.exe'), f'--port=9080', '--xsrf=False'])
+                         command=[os.path.join(service_dir, 'wssh.exe'), 
+                                f'--port=9080', '--xsrf=False', f'--address={host}'])
             start_service(namespace="Django",
-                          command=[os.path.join(service_dir, 'allkeeper-django.exe'), 'runserver', f'127.0.0.1:{port}',
-                                   '--noreload'])
+                         command=[os.path.join(service_dir, 'allkeeper-django.exe'), 
+                                'runserver', f'{host}:{port}', '--noreload'])
         else:
             print("当前系统不是Windows")
-            start_service(namespace="WebSSH", command=['./services/wssh', f'--port=9080', '--xsrf=False'])
+            start_service(namespace="WebSSH", 
+                         command=['./services/wssh', f'--port=9080', 
+                                '--xsrf=False', f'--address={host}'])
             start_service(namespace="Django",
-                          command=['./services/allkeeper-django', 'runserver', f'127.0.0.1:{port}', '--noreload'])
+                         command=['./services/allkeeper-django', 'runserver', 
+                                f'{host}:{port}', '--noreload'])
+    
     url = f'http://127.0.0.1:{port}/admin/'
     navigate2after_wait(window, url)
 
@@ -162,7 +170,8 @@ def on_window_start(window: webview.Window, dev_mode: bool):
 @click.command()
 @click.option('--port', default=8000, type=int, help='The port of the Django service')
 @click.option('--dev', flag_value=True, default=False, help='Run the service in development mode')
-def main(port, dev):
+@click.option('--lan', flag_value=True, default=False, help='允许局域网访问')
+def main(port, dev, lan):
     window = webview.create_window('All-Keeper', "http://localhost:9080", width=1400, height=1000)
     window.events.closed += on_closed
     window.events.closing += on_closing
@@ -172,12 +181,14 @@ def main(port, dev):
     window.events.restored += on_restored
     window.events.resized += on_resized
     window.events.moved += on_moved
-    webview.start(on_window_start, args=(window, dev), ssl=True)
+    webview.start(on_window_start, args=(window, dev, lan), ssl=True)
     print("Command line arguments (after execute):", sys.argv)
     if dev:
         print("AllKeeperDesktop is now running on development mode !")
     else:
         print("AllKeeperDesktop is now running !")
+    if lan:
+        print("局域网访问已启用！")
 
 
 if __name__ == '__main__':
