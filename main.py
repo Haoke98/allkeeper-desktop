@@ -131,38 +131,37 @@ def on_moved(x, y):
     print('pywebview window is moved. new coordinates are x: {x}, y: {y}'.format(x=x, y=y))
 
 
-def on_window_start(window: webview.Window, dev_mode: bool, lan_access: bool):
-    port = 8000
+def on_window_start(window: webview.Window, dev_mode: bool, lan_access: bool, port: int = 8000):
     # 根据是否允许局域网访问设置host
     host = '0.0.0.0' if lan_access else '127.0.0.1'
-    
+
     if dev_mode:
         start_service(namespace="WebSSH", command=['wssh', f'--port=9080', '--xsrf=False', f'--address={host}'])
         manage_script = os.path.join(BASE_DIR, 'service', 'manage.py')
-        start_service(namespace="Django", 
-                     command=[f'/Users/shadikesadamu/anaconda3/envs/django_async_admin/bin/python', 
-                             manage_script, 'runserver', 
-                             f'{host}:{port}'])
+        start_service(namespace="Django",
+                      command=[f'/Users/shadikesadamu/anaconda3/envs/django_async_admin/bin/python',
+                               manage_script, 'runserver',
+                               f'{host}:{port}'])
     else:
         if os.name == 'nt':
             print("当前系统是Windows")
             print("CWD:", os.getcwd())
             service_dir = os.path.join(BASE_DIR, "services")
             start_service(namespace="WebSSH",
-                         command=[os.path.join(service_dir, 'wssh.exe'), 
-                                f'--port=9080', '--xsrf=False', f'--address={host}'])
+                          command=[os.path.join(service_dir, 'wssh.exe'),
+                                   f'--port=9080', '--xsrf=False', f'--address={host}'])
             start_service(namespace="Django",
-                         command=[os.path.join(service_dir, 'allkeeper-django.exe'), 
-                                'runserver', f'{host}:{port}', '--noreload'])
+                          command=[os.path.join(service_dir, 'allkeeper-django.exe'),
+                                   'runserver', f'{host}:{port}', '--noreload'])
         else:
             print("当前系统不是Windows")
-            start_service(namespace="WebSSH", 
-                         command=['./services/wssh', f'--port=9080', 
-                                '--xsrf=False', f'--address={host}'])
+            start_service(namespace="WebSSH",
+                          command=['./services/wssh', f'--port=9080',
+                                   '--xsrf=False', f'--address={host}'])
             start_service(namespace="Django",
-                         command=['./services/allkeeper-django', 'runserver', 
-                                f'{host}:{port}', '--noreload'])
-    
+                          command=['./services/allkeeper-django', 'runserver',
+                                   f'{host}:{port}', '--noreload'])
+
     url = f'http://127.0.0.1:{port}/admin/'
     navigate2after_wait(window, url)
 
@@ -181,7 +180,7 @@ def main(port, dev, lan):
     window.events.restored += on_restored
     window.events.resized += on_resized
     window.events.moved += on_moved
-    webview.start(on_window_start, args=(window, dev, lan), ssl=True)
+    webview.start(on_window_start, args=(window, dev, lan, port), ssl=True)
     print("Command line arguments (after execute):", sys.argv)
     if dev:
         print("AllKeeperDesktop is now running on development mode !")
