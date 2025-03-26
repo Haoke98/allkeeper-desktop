@@ -147,6 +147,17 @@ class ServiceAdmin(AjaxAdmin):
             ips = obj.system.server.ips.all()
             for i, ipObj in enumerate(ips):
                 # print(obj.system, ipObj.ip)
+                if obj.wafPort:
+                    if obj.sslOn:
+                        if obj.dashboardPath:
+                            _uris.append("https://{}:{}/{}".format(ipObj.ip, obj.wafPort, obj.dashboardPath))
+                        else:
+                            _uris.append("https://{}:{}".format(ipObj.ip, obj.wafPort))
+                    else:
+                        if obj.dashboardPath:
+                            _uris.append("http://{}:{}/{}".format(ipObj.ip, obj.wafPort, obj.dashboardPath))
+                        else:
+                            _uris.append("http://{}:{}".format(ipObj.ip, obj.wafPort))
                 if obj.dashboardPort:
                     if obj.sslOn:
                         if obj.dashboardPath:

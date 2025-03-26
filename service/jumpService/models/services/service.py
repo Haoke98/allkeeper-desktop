@@ -53,6 +53,7 @@ class Service(BaseAccountModel):
     dashboardPort = models.PositiveIntegerField(verbose_name="Dashboard/Console端口", null=True, blank=True,
                                                 db_index=True)
     dashboardPath = models.TextField(verbose_name="路径", null=True, blank=True)
+    wafPort = models.PositiveIntegerField(verbose_name="WAF代理端口", null=True, blank=True, db_index=True)
 
     # TODO: 确定单用户服务和多用户服务之间的关系的处理, 要分开还是统一处理?
 
@@ -66,6 +67,13 @@ class Service(BaseAccountModel):
 
     def __str__(self):
         return f"{self._type.name}服务({self.system}:{self.port}）"
+
+
+class ConnectiveStatus(BaseAccountModel):
+    status = models.CharField(verbose_name="连通状态", max_length=20, default='unknown',
+                              choices=(('ok', '正常'), ('fail', '故障'), ('checking', '检测中'), ('unknown', '未知')))
+    lastChecked = models.DateTimeField(verbose_name="最后检测时间", null=True, blank=True)
+    service = models.ForeignKey(to=Service, on_delete=models.CASCADE, related_name="connectStatusHistory")
 
 
 class ServiceUser(BaseModel):
