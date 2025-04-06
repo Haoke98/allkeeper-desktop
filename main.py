@@ -134,6 +134,7 @@ def on_moved(x, y):
 def on_window_start(window: webview.Window, dev_mode: bool, lan_access: bool, port: int = 8000):
     # 根据是否允许局域网访问设置host
     host = '0.0.0.0' if lan_access else '127.0.0.1'
+    print("Lan Access:", lan_access, "Host:", host)
 
     if dev_mode:
         start_service(namespace="WebSSH", command=['wssh', f'--port=9080', '--xsrf=False', f'--address={host}'])
