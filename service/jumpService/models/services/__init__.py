@@ -12,3 +12,4 @@ from .es import ElasticSearch
 from .minio import MinIO
 from .service import Service, ServiceUser, ServiceType
 from .ssh import SystemUser
+from .service_url import ServiceURL
