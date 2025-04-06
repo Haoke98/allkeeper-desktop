@@ -13,6 +13,7 @@ class EmailAdmin(BaseAccountAdmin):
     list_filter = ['group']
     list_select_related = ['group']
     search_fields = ['username', 'remark', 'group__name']
+    ordering = ('-updatedAt', '-createdAt')
 
     def formatter(self, obj, field_name, value):
         # 这里可以对value的值进行判断，比如日期格式化等
