@@ -97,7 +97,6 @@ class ServiceURL(BaseModel):
                 os_image = OperationSystemImage.objects.filter(name="CentOS", version="7").first()
                 if os_image:
                     os = OperationSystem.objects.create(
-                        image=os_image,
                         server=server,
                         remark="自动创建的操作系统"
                     )

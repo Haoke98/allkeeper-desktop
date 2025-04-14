@@ -70,7 +70,7 @@ class OperationSystemImage(BaseModel):
 
 
 class OperationSystem(BaseModel):
-    image = fields.ForeignKey(to=OperationSystemImage, on_delete=models.CASCADE, null=True, blank=False,
+    image = fields.ForeignKey(to=OperationSystemImage, on_delete=models.CASCADE, null=True, blank=True,
                               verbose_name="系统镜像")
     server = fields.ForeignKey(to=ServerNew, on_delete=models.CASCADE, null=True, blank=False, verbose_name="服务器",
                                related_name="systems")
