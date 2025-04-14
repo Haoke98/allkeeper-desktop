@@ -17,7 +17,7 @@ from simplepro.decorators import button
 from simplepro.dialog import ModalDialog
 from simpleui.admin import AjaxAdmin
 
-from ..models import Service, ServiceUser, ServiceType, ServerNew, OperationSystemImage, ElasticSearch, ServiceURL
+from ..models import Service, ServiceUser, ServiceType, ServerNew, OperationSystemImage, ElasticSearch, ServiceURL, Protocol
 
 
 @admin.register(ServiceType)
@@ -135,16 +135,52 @@ class ServiceURLInlineAdmin(admin.TabularInline):
     model = ServiceURL
     extra = 1
     min_num = 0
-    fields = ['name', 'url', 'is_default']
+    fields = ['name', 'protocol', 'host', 'port', 'path', 'is_default', 'is_dashboard']
     verbose_name = "访问地址"
     verbose_name_plural = verbose_name
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "protocol":
+            kwargs["queryset"] = Protocol.objects.all().order_by('name')
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+
+@admin.register(Protocol)
+class ProtocolAdmin(BaseAdmin):
+    list_display = ['id', 'name', 'default_port', 'is_web_protocol', 'description', 'updatedAt', 'createdAt']
+    search_fields = ['name', 'description']
+    list_filter = ['is_web_protocol']
+    ordering = ['name']
+
+    fields_options = {
+        'id': FieldOptions.UUID,
+        'name': {
+            'min_width': '120px',
+            'align': 'left'
+        },
+        'default_port': {
+            'min_width': '100px',
+            'align': 'center'
+        },
+        'is_web_protocol': {
+            'min_width': '100px',
+            'align': 'center'
+        },
+        'description': {
+            'min_width': '300px',
+            'align': 'left'
+        },
+        'createdAt': FieldOptions.DATE_TIME,
+        'updatedAt': FieldOptions.DATE_TIME,
+        'deletedAt': FieldOptions.DATE_TIME
+    }
 
 
 @admin.register(ServiceURL)
 class ServiceURLAdmin(BaseAdmin):
-    list_display = ['id', 'service', 'name', 'url', 'is_default', 'updatedAt', 'createdAt']
-    list_filter = ['service', 'is_default']
-    search_fields = ['name', 'url', 'service__system__server__remark']
+    list_display = ['id', 'service', 'name', 'protocol', 'host', 'port', 'path', 'is_default', 'is_dashboard', 'updatedAt', 'createdAt']
+    list_filter = ['service', 'protocol', 'is_default', 'is_dashboard']
+    search_fields = ['name', 'host', 'path', 'service__system__server__remark']
     ordering = ('-is_default', '-updatedAt',)
 
     fields_options = {
@@ -162,15 +198,36 @@ class ServiceURLAdmin(BaseAdmin):
             'min_width': '200px',
             'align': 'left'
         },
-        'url': {
-            'min_width': '400px',
+        'protocol': {
+            'min_width': '120px',
+            'align': 'left'
+        },
+        'host': {
+            'min_width': '200px',
+            'align': 'left'
+        },
+        'port': {
+            'min_width': '100px',
+            'align': 'center'
+        },
+        'path': {
+            'min_width': '300px',
             'align': 'left'
         },
         'is_default': {
             'min_width': '100px',
             'align': 'center'
+        },
+        'is_dashboard': {
+            'min_width': '100px',
+            'align': 'center'
         }
     }
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "protocol":
+            kwargs["queryset"] = Protocol.objects.all().order_by('name')
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 @admin.register(Service)
