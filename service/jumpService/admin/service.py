@@ -17,7 +17,7 @@ from simplepro.decorators import button
 from simplepro.dialog import ModalDialog
 from simpleui.admin import AjaxAdmin
 
-from ..models import Service, ServiceUser, ServiceType, ServerNew, OperationSystemImage, ElasticSearch
+from ..models import Service, ServiceUser, ServiceType, ServerNew, OperationSystemImage, ElasticSearch, ServiceURL
 
 
 @admin.register(ServiceType)
@@ -131,6 +131,48 @@ class ServiceTypeAdmin(BaseAdmin):
         }
 
 
+class ServiceURLInlineAdmin(admin.TabularInline):
+    model = ServiceURL
+    extra = 1
+    min_num = 0
+    fields = ['name', 'url', 'is_default']
+    verbose_name = "访问地址"
+    verbose_name_plural = verbose_name
+
+
+@admin.register(ServiceURL)
+class ServiceURLAdmin(BaseAdmin):
+    list_display = ['id', 'service', 'name', 'url', 'is_default', 'updatedAt', 'createdAt']
+    list_filter = ['service', 'is_default']
+    search_fields = ['name', 'url', 'service__system__server__remark']
+    ordering = ('-is_default', '-updatedAt',)
+
+    fields_options = {
+        'id': FieldOptions.UUID,
+        'createdAt': FieldOptions.DATE_TIME,
+        'updatedAt': FieldOptions.DATE_TIME,
+        'deletedAt': FieldOptions.DATE_TIME,
+        'service': {
+            'min_width': '320px',
+            'align': 'left',
+            "resizeable": True,
+            "show_overflow_tooltip": True
+        },
+        'name': {
+            'min_width': '200px',
+            'align': 'left'
+        },
+        'url': {
+            'min_width': '400px',
+            'align': 'left'
+        },
+        'is_default': {
+            'min_width': '100px',
+            'align': 'center'
+        }
+    }
+
+
 @admin.register(Service)
 class ServiceAdmin(AjaxAdmin):
     list_display = ['id', '_type', 'system', 'port', '_url', '_user_management', 'remark', 'updatedAt',
@@ -140,41 +182,18 @@ class ServiceAdmin(AjaxAdmin):
     list_filter = ['_type', 'system__image', 'system__server']
     actions = ['migrate', 'test_action', ]
     ordering = ('-updatedAt', '-createdAt',)
+    inlines = [ServiceURLInlineAdmin]
 
     def _url(self, obj):
-        _uris = []
-        if obj.system:
-            ips = obj.system.server.ips.all()
-            for i, ipObj in enumerate(ips):
-                # print(obj.system, ipObj.ip)
-                if obj.wafPort:
-                    if obj.sslOn:
-                        if obj.dashboardPath:
-                            _uris.append("https://{}:{}/{}".format(ipObj.ip, obj.wafPort, obj.dashboardPath))
-                        else:
-                            _uris.append("https://{}:{}".format(ipObj.ip, obj.wafPort))
-                    else:
-                        if obj.dashboardPath:
-                            _uris.append("http://{}:{}/{}".format(ipObj.ip, obj.wafPort, obj.dashboardPath))
-                        else:
-                            _uris.append("http://{}:{}".format(ipObj.ip, obj.wafPort))
-                if obj.dashboardPort:
-                    if obj.sslOn:
-                        if obj.dashboardPath:
-                            _uris.append("https://{}:{}/{}".format(ipObj.ip, obj.dashboardPort, obj.dashboardPath))
-                        else:
-                            _uris.append("https://{}:{}".format(ipObj.ip, obj.dashboardPort))
-                    else:
-                        if obj.dashboardPath:
-                            _uris.append("http://{}:{}/{}".format(ipObj.ip, obj.dashboardPort, obj.dashboardPath))
-                        else:
-                            _uris.append("http://{}:{}".format(ipObj.ip, obj.dashboardPort))
+        urls = obj.urls.all()
+        if not urls:
+            return "未配置访问地址"
         res = ""
-        for i, _uri in enumerate(_uris, 1):
-            res += f"""<a target="_blank" style="margin-right:10px;" href="{_uri}" >入口{i}</a>"""
+        for url in urls:
+            res += f"""<a target="_blank" style="margin-right:10px;" href="{url.url}" >{url.name or url.url}</a>"""
         return res
 
-    _url.short_description = "Dashboard入口"
+    _url.short_description = "访问地址"
 
     def get_layer_config(self, request, queryset):
         print("layer进行了..")
