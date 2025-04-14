@@ -254,6 +254,15 @@ class ServiceURLAdmin(BaseAdmin):
         return form
 
 
+class ServiceUserInlineAdmin(admin.TabularInline):
+    model = ServiceUser
+    extra = 1
+    min_num = 0
+    fields = ['owner', 'username', 'password', 'hasRootPriority']
+    verbose_name = "服务用户"
+    verbose_name_plural = verbose_name
+
+
 @admin.register(Service)
 class ServiceAdmin(AjaxAdmin):
     list_display = ['id', '_type', 'system', 'port', '_url', '_user_management', 'remark', 'updatedAt',
@@ -263,7 +272,7 @@ class ServiceAdmin(AjaxAdmin):
     list_filter = ['_type', 'system__image', 'system__server']
     actions = ['migrate', 'test_action', ]
     ordering = ('-updatedAt', '-createdAt',)
-    inlines = [ServiceURLInlineAdmin]
+    inlines = [ServiceURLInlineAdmin, ServiceUserInlineAdmin]
 
     def _url(self, obj):
         res = ""
