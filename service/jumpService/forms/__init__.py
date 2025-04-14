@@ -7,3 +7,6 @@
 @disc:
 ======================================="""
 from .dbService import DbServiceForm
+from .service import ServiceURLForm
+
+__all__ = ['ServiceURLForm']

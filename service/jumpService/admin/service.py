@@ -18,6 +18,7 @@ from simplepro.dialog import ModalDialog
 from simpleui.admin import AjaxAdmin
 
 from ..models import Service, ServiceUser, ServiceType, ServerNew, OperationSystemImage, ElasticSearch, ServiceURL, Protocol
+from ..forms import ServiceURLForm
 
 
 @admin.register(ServiceType)
@@ -133,6 +134,7 @@ class ServiceTypeAdmin(BaseAdmin):
 
 class ServiceURLInlineAdmin(admin.TabularInline):
     model = ServiceURL
+    form = ServiceURLForm
     extra = 1
     min_num = 0
     fields = ['name', 'protocol', 'host', 'port', 'path', 'is_default', 'is_dashboard']
@@ -143,6 +145,11 @@ class ServiceURLInlineAdmin(admin.TabularInline):
         if db_field.name == "protocol":
             kwargs["queryset"] = Protocol.objects.all().order_by('name')
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        formset.form.base_fields['host'].widget.template_name = 'admin/widgets/url_input.html'
+        return formset
 
 
 @admin.register(Protocol)
@@ -178,6 +185,7 @@ class ProtocolAdmin(BaseAdmin):
 
 @admin.register(ServiceURL)
 class ServiceURLAdmin(BaseAdmin):
+    form = ServiceURLForm
     list_display = ['id', 'service', 'name', 'protocol', 'host', 'port', 'path', 'is_default', 'is_dashboard', 'updatedAt', 'createdAt']
     list_filter = ['service', 'protocol', 'is_default', 'is_dashboard']
     search_fields = ['name', 'host', 'path', 'service__system__server__remark']
@@ -228,6 +236,22 @@ class ServiceURLAdmin(BaseAdmin):
         if db_field.name == "protocol":
             kwargs["queryset"] = Protocol.objects.all().order_by('name')
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        # 添加datalist到模板
+        form.template = form.template.replace(
+            '{{ field.field }}',
+            '''{{ field.field }}
+            {% if field.name == "host" %}
+            <datalist id="host-list">
+                {% for choice in field.field.widget.attrs.datalist %}
+                    <option value="{{ choice }}">
+                {% endfor %}
+            </datalist>
+            {% endif %}'''
+        )
+        return form
 
 
 @admin.register(Service)

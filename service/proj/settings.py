@@ -27,7 +27,7 @@ SECURE_CROSS_ORIGIN_OPENER_POLICY = 'none'
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = Path(__file__).resolve().parent.parent
 HOME_DIR = os.path.expanduser("~")
-APP_HOME_DIR = os.path.join(HOME_DIR, 'all-keeper')
+APP_HOME_DIR = os.path.join(HOME_DIR, '.config','all-keeper')
 if not os.path.isdir(APP_HOME_DIR):
     os.mkdir(APP_HOME_DIR)
 
