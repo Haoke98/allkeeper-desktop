@@ -35,12 +35,12 @@ class Protocol(BaseAccountModel):
 
 
 class ServiceURL(BaseModel):
-    """服务入口URL模型
+    """服务入口模型
 
     一个Service可以有多个入口URL，类似于Platform和URL的关系
     """
     service = models.ForeignKey(to=Service, on_delete=models.CASCADE, verbose_name="服务",
-                              null=False, blank=False, related_name="urls")
+                                null=False, blank=False, related_name="urls")
     name = models.CharField(verbose_name="名称", max_length=50, null=True, blank=True)
     protocol = models.ForeignKey(to=Protocol, on_delete=models.PROTECT, verbose_name="协议", null=False, blank=False)
     host = models.CharField(verbose_name="主机", max_length=255, null=False, blank=False)
@@ -61,19 +61,26 @@ class ServiceURL(BaseModel):
         """获取完整的URL"""
         url = f"{self.protocol.name}://{self.host}:{self.port}"
         if self.path:
-            url += self.path
+            url += "/" + self.path
         return url
 
     def save(self, *args, **kwargs):
         # 如果host是IP地址，自动创建相关资源
         try:
             ip = IPAddress.objects.get(ip=self.host)
+            # 如果找到了IP地址，并且服务没有关联操作系统，尝试自动关联
+            if ip.device and hasattr(ip.device, 'systems') and not self.service.system:
+                systems = ip.device.systems.all()
+                if systems.count() == 1:
+                    # 如果只有一个操作系统，直接关联
+                    self.service.system = systems.first()
+                    self.service.save()
         except IPAddress.DoesNotExist:
             # 检查是否是有效的IP地址
             if self.host.replace('.', '').isdigit():
                 # 创建网络
                 net = Net.objects.create(
-                    name=f"自动创建网络-{self.host}",
+                    content=f"{self.host}/32",  # 假设是单个IP地址
                     remark="自动创建的网络"
                 )
                 # 创建IP地址
@@ -84,8 +91,7 @@ class ServiceURL(BaseModel):
                 )
                 # 创建服务器
                 server = ServerNew.objects.create(
-                    name=f"自动创建服务器-{self.host}",
-                    remark="自动创建的服务器"
+                    remark=f"自动创建服务器-{self.host}"
                 )
                 # 创建操作系统
                 os_image = OperationSystemImage.objects.filter(name="CentOS", version="7").first()
@@ -98,4 +104,9 @@ class ServiceURL(BaseModel):
                     # 关联IP到服务器
                     server.ips.add(ip)
                     server.save()
+                    # 如果服务没有关联操作系统，关联到新创建的操作系统
+                    if not self.service.system:
+                        self.service.system = os
+                        self.service.save()
+
         super().save(*args, **kwargs)

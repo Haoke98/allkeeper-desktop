@@ -266,12 +266,9 @@ class ServiceAdmin(AjaxAdmin):
     inlines = [ServiceURLInlineAdmin]
 
     def _url(self, obj):
-        urls = obj.urls.all()
-        if not urls:
-            return "未配置访问地址"
         res = ""
-        for url in urls:
-            res += f"""<a target="_blank" style="margin-right:10px;" href="{url.url}" >{url.name or url.url}</a>"""
+        for url in obj.urls.all():
+            res += f"""<a target="_blank" style="margin-right:10px;" href="{url.get_full_url()}" >{url.name or url.get_full_url()}</a>"""
         return res
 
     _url.short_description = "访问地址"
