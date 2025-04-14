@@ -140,7 +140,7 @@ def on_window_start(window: webview.Window, dev_mode: bool, lan_access: bool, po
         start_service(namespace="WebSSH", command=['wssh', f'--port=9080', '--xsrf=False', f'--address={host}'])
         manage_script = os.path.join(BASE_DIR, 'service', 'manage.py')
         start_service(namespace="Django",
-                      command=[f'/Users/shadikesadamu/anaconda3/envs/django_async_admin/bin/python',
+                      command=[f'python',
                                manage_script, 'runserver',
                                f'{host}:{port}'])
     else:

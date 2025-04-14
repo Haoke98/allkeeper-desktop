@@ -1,7 +1,6 @@
 import errno
 import socket
 import threading
-from importlib.metadata import Deprecated
 
 from django.contrib import admin
 from django.db.models import QuerySet
