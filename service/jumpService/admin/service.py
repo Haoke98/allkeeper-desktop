@@ -137,7 +137,7 @@ class ServiceURLInlineAdmin(admin.TabularInline):
     form = ServiceURLForm
     extra = 1
     min_num = 0
-    fields = ['name', 'protocol', 'host', 'port', 'path', 'is_default', 'is_dashboard']
+    fields = ['name', 'protocol', 'domain', 'host', 'port', 'path', 'is_default', 'is_dashboard']
     verbose_name = "访问地址"
     verbose_name_plural = verbose_name
 
@@ -149,6 +149,8 @@ class ServiceURLInlineAdmin(admin.TabularInline):
     def get_formset(self, request, obj=None, **kwargs):
         formset = super().get_formset(request, obj, **kwargs)
         formset.form.base_fields['host'].widget.template_name = 'admin/widgets/url_input.html'
+        formset.form.base_fields['host'].required = False
+        formset.form.base_fields['port'].required = False
         return formset
 
 
