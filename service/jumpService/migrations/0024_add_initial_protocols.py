@@ -26,52 +26,40 @@ def add_initial_protocols(apps, schema_editor):
             'description': 'SSH远程连接协议'
         },
         {
-            'name': 'mysql',
-            'default_port': 3306,
+            'name': 'tcp',
+            'default_port': None,
             'is_web_protocol': False,
-            'description': 'MySQL数据库协议'
+            'description': 'TCP协议'
         },
         {
-            'name': 'postgresql',
-            'default_port': 5432,
+            'name': 'udp',
+            'default_port': None,
             'is_web_protocol': False,
-            'description': 'PostgreSQL数据库协议'
+            'description': 'UDP协议'
         },
         {
-            'name': 'redis',
-            'default_port': 6379,
+            'name': 'ftp',
+            'default_port': 21,
             'is_web_protocol': False,
-            'description': 'Redis数据库协议'
+            'description': 'FTP文件传输协议'
         },
         {
-            'name': 'mongodb',
-            'default_port': 27017,
+            'name': 'sftp',
+            'default_port': 22,
             'is_web_protocol': False,
-            'description': 'MongoDB数据库协议'
+            'description': 'SFTP安全文件传输协议'
         },
         {
-            'name': 'elasticsearch',
-            'default_port': 9200,
-            'is_web_protocol': True,
-            'description': 'Elasticsearch搜索引擎协议'
-        },
-        {
-            'name': 'kibana',
-            'default_port': 5601,
-            'is_web_protocol': True,
-            'description': 'Kibana可视化平台'
-        },
-        {
-            'name': 'rabbitmq',
-            'default_port': 5672,
+            'name': 'ldap',
+            'default_port': 389,
             'is_web_protocol': False,
-            'description': 'RabbitMQ消息队列协议'
+            'description': 'LDAP目录访问协议'
         },
         {
-            'name': 'rabbitmq-management',
-            'default_port': 15672,
-            'is_web_protocol': True,
-            'description': 'RabbitMQ管理界面'
+            'name': 'ldaps',
+            'default_port': 636,
+            'is_web_protocol': False,
+            'description': 'LDAPS安全目录访问协议'
         }
     ]
 
