@@ -135,7 +135,7 @@ class ServiceTypeAdmin(BaseAdmin):
 class ServiceURLInlineAdmin(admin.TabularInline):
     model = ServiceURL
     form = ServiceURLForm
-    extra = 1
+    extra = 0
     min_num = 0
     fields = ['name', 'protocol', 'domain', 'host', 'port', 'path', 'is_default', 'is_dashboard']
     verbose_name = "访问地址"
@@ -258,7 +258,7 @@ class ServiceURLAdmin(BaseAdmin):
 
 class ServiceUserInlineAdmin(admin.TabularInline):
     model = ServiceUser
-    extra = 1
+    extra = 0
     min_num = 0
     fields = ['owner', 'username', 'password', 'hasRootPriority']
     verbose_name = "服务用户"
