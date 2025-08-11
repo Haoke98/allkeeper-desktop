@@ -60,10 +60,30 @@ class BtAdmin(BaseAdmin):
                 uri += f"{ipObj.ip}:{obj.port}"
                 if obj.path:
                     uri += f"/{obj.path}"
-                if len(ips) == 1:
-                    res += f"""<a target="_blank" href="{uri}" >入口</a>"""
-                else:
-                    res += f"""<a target="_blank" href="{uri}" >入口{i}</a></br>"""
+                res += f"""
+                <div style="display:flex; justify-content:space-around; align-items:center;margin:4px;">
+                  <a target="_blank" href="{uri}">入口{i}</a>
+                  <el-button 
+                    style="
+                      display: inline-flex; 
+                      justify-content: center; 
+                      align-items: center;
+                      width: 24px; 
+                      height: 24px;
+                      padding: 0;
+                      border-radius: 4px;
+                      min-width: auto;
+                    "
+                    type="primary" 
+                    onclick="copyStr('{uri}')"
+                  >
+                    <i class="el-icon-copy-document" style="margin:0; font-size:16px"></i>
+                  </el-button>
+                </div>
+                """
+                if len(ips) != 1:
+                    # res += f"""</br>"""
+                    pass
             return res
 
     _url.short_description = "入口"
@@ -95,6 +115,10 @@ class BtAdmin(BaseAdmin):
             'align': 'left'
         },
         'pwd': {
+            'width': '200px',
+            'align': 'center'
+        },
+        '_url': {
             'width': '200px',
             'align': 'center'
         },
