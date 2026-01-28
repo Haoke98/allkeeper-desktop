@@ -27,9 +27,10 @@ A desktop version for the project allkeeper(https://github.com/Haoke98/Allkeeper
 ## Develop Plan & TODO
 
 * [x] 已经实现了与外部 SSH 客户端联动 : [electerm](https://github.com/electerm/electerm.git)
-  * [x] 支持lrzsz ( js调起上传下载文件, [pywebview](https://github.com/r0x0r/pywebview)
-  支持 [DragDrop](https://pywebview.flowrl.com/examples/drag_drop.html)
-  和 [Downloads](https://pywebview.flowrl.com/examples/downloads.html) 对应着 `rz`和 `sz`)
+  * [x] 支持lrzsz
+* [ ] 打通与内网穿透工具:Lanproxy 之间的联动
+  * [ ] 端口映射配置的同步
+  * [ ] 实现基于接口来动态配置端口映射规则
 * [ ] 集成各大流行数据库客户端
 * [ ] 服务器之间进行双重加密通信
 * [ ] Offline mode
