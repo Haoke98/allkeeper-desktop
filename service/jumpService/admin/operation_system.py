@@ -103,13 +103,13 @@ class OperationSystemAdmin(BaseAdmin):
     list_filter = ['server', 'image', 'server__remark']
     search_fields = ['server__code', 'server__remark', 'server__ips__ip']
     ordering = ('-updatedAt',)
-    inlines = [UserInlineAdmin]
+    # inlines = [UserInlineAdmin]
 
     def open_webssh(self, obj: OperationSystem):
         modals = []
         modal = ModalDialog()
-        modal.width = "92%"
-        modal.height = "70vh"
+        modal.width = "32%"
+        modal.height = "16vh"
         # 这个是单元格显示的文本
         modal.cell = f'<el-link type="primary">连接</el-link>'
         modal.title = obj.__str__()

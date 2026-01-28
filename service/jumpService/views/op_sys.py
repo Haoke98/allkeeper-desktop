@@ -71,35 +71,84 @@ def ssh(request):
         submit_txt = "重新连接"
     IPOptions = ""
     for _ip in ips:
-        IPOptions += "<option value='" + str(_ip.id)
-        if _ip.id == selectedHostId:
-            IPOptions += "' selected>"
-        else:
-            IPOptions += "' >"
-        IPOptions += str(_ip.ip) + "</option>"
+        selected = "selected" if str(_ip.id) == str(selectedHostId) else ""
+        IPOptions += f'<option value="{_ip.id}" data-ip="{_ip.ip}" {selected}>{_ip.ip}</option>'
+
     UserOptions = ""
     for _user in users:
-        UserOptions += "<option value='" + str(_user.id)
-        if _user.id == selectedUserId:
-            UserOptions += "' selected>"
-        else:
-            UserOptions += "' >"
-        UserOptions += str(_user.username) + "</option>"
-    html_txt = f'''
+        selected = "selected" if str(_user.id) == str(selectedUserId) else ""
+        # 对密码进行转义防止 HTML 属性截断
+        safe_pwd = _user.password.replace('"', '&quot;').replace("'", "&#39;")
+        UserOptions += f'<option value="{_user.id}" data-username="{_user.username}" data-password="{safe_pwd}" {selected}>{_user.username}</option>'
+
+    html_txt = '''
             <!DOCTYPE html>
-            <body style="display=flex;">
-                <form method="post" action="">
-                    <div>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <style>
+                    body { display: flex; flex-direction: column; padding: 20px; font-family: sans-serif; }
+                    .controls { margin-bottom: 20px; display: flex; gap: 10px; align-items: center; }
+                    select, button { padding: 8px; border-radius: 4px; border: 1px solid #ccc; }
+                    .btn-ssh { background-color: #2196F3; color: white; border: none; cursor: pointer; }
+                    .btn-ssh:hover { background-color: #0b7dda; }
+                </style>
+            </head>
+            <body>
+                <div class="controls">
+                    <form method="post" action="" style="display: flex; gap: 10px;">
                         <select name="hostname">
-                            {IPOptions}
+                            %s
                         </select>
                         <select name="user">
-                            {UserOptions}
+                            %s
                         </select>
-                        <button type="submit">{submit_txt}</button>
-                    <div>
-                </form>
-                {iframe}
-            <body>
-               '''
+                    </form>
+                    <button type="button" class="btn-ssh" onclick="handleOpenSsh()">打开 SSH 客户端</button>
+                </div>
+                <script>
+                    function openSsh(host, port, username, password) {
+                        const encodedPassword = password ? encodeURIComponent(password) : '';
+                        const authPart = encodedPassword ? `${username}:${encodedPassword}@` : `${username}@`;
+                        const sshUrl = `ssh://${authPart}${host}:${port}?title=Server-${host}`;
+                        
+                        console.log("正在尝试打开链接:", sshUrl);
+                        
+                        // 使用 <a> 标签模拟点击，并设置 target 为 _top 
+                        // 这样浏览器会将其视为顶级窗口的导航，绕过对 iframe 内部 "嵌入凭据的子资源请求" 的拦截
+                        const link = document.createElement('a');
+                        link.href = sshUrl;
+                        link.target = '_top';
+                        link.style.display = 'none';
+                        document.body.appendChild(link);
+                        link.click();
+                        
+                        // 延迟移除，确保点击事件已触发
+                        setTimeout(() => {
+                            document.body.removeChild(link);
+                        }, 100);
+                    }
+                    function handleOpenSsh() {
+                        const hostSelect = document.getElementsByName('hostname')[0];
+                        const userSelect = document.getElementsByName('user')[0];
+                        
+                        const selectedHost = hostSelect.options[hostSelect.selectedIndex];
+                        const selectedUser = userSelect.options[userSelect.selectedIndex];
+                        
+                        if (!selectedHost || !selectedUser) {
+                            alert("请先选择主机和用户");
+                            return;
+                        }
+                        
+                        const host = selectedHost.getAttribute('data-ip');
+                        const username = selectedUser.getAttribute('data-username');
+                        const password = selectedUser.getAttribute('data-password');
+                        const port = %s;
+                        
+                        openSsh(host, port, username, password);
+                    }
+                </script>
+            </body>
+            </html>
+               ''' % (IPOptions, UserOptions, ssh_port)
     return HttpResponse(html_txt)
