@@ -106,28 +106,8 @@ def ssh(request):
                     </form>
                     <button type="button" class="btn-ssh" onclick="handleOpenSsh()">打开 SSH 客户端</button>
                 </div>
+                <script src="/static/js/SSH-utils.js"></script>
                 <script>
-                    function openSsh(host, port, username, password) {
-                        const encodedPassword = password ? encodeURIComponent(password) : '';
-                        const authPart = encodedPassword ? `${username}:${encodedPassword}@` : `${username}@`;
-                        const sshUrl = `ssh://${authPart}${host}:${port}?title=Server-${host}`;
-                        
-                        console.log("正在尝试打开链接:", sshUrl);
-                        
-                        // 使用 <a> 标签模拟点击，并设置 target 为 _top 
-                        // 这样浏览器会将其视为顶级窗口的导航，绕过对 iframe 内部 "嵌入凭据的子资源请求" 的拦截
-                        const link = document.createElement('a');
-                        link.href = sshUrl;
-                        link.target = '_top';
-                        link.style.display = 'none';
-                        document.body.appendChild(link);
-                        link.click();
-                        
-                        // 延迟移除，确保点击事件已触发
-                        setTimeout(() => {
-                            document.body.removeChild(link);
-                        }, 100);
-                    }
                     function handleOpenSsh() {
                         const hostSelect = document.getElementsByName('hostname')[0];
                         const userSelect = document.getElementsByName('user')[0];
@@ -145,7 +125,7 @@ def ssh(request):
                         const password = selectedUser.getAttribute('data-password');
                         const port = %s;
                         
-                        openSsh(host, port, username, password);
+                        openSSH(host, port, username, password);
                     }
                 </script>
             </body>
