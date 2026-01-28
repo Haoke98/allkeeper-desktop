@@ -101,6 +101,7 @@ class OperationSystemAdmin(BaseAdmin):
     list_display = ['id', 'image', 'server', 'open_ssh', 'sshPort',
                     'updatedAt', 'createdAt', 'deletedAt']
     list_filter = ['server', 'image', 'server__remark']
+    list_filter_multiples = ('server','image','server__remark')
     search_fields = ['server__code', 'server__remark', 'server__ips__ip']
     ordering = ('-updatedAt',)
     # inlines = [UserInlineAdmin]
