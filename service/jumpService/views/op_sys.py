@@ -6,7 +6,6 @@
 @Software: PyCharm
 @disc:
 ======================================="""
-import base64
 
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -25,10 +24,9 @@ def ssh(request):
     users = obj.users.all()
     # FIXME 这里需要先判断是否是Linux内核系统, 如果是Windows内核系统还得要用 远程桌面
     ssh_port = obj.sshPort
-    for _ip in ips:
-
-        if _ip.net is not None:
-            if _ip.net.is_global():
+    for ip_port in ips:
+        if ip_port.net is not None:
+            if ip_port.net.is_global():
                 prefix = "公网"
             else:
                 prefix = "内网"
@@ -37,23 +35,23 @@ def ssh(request):
     # TODO: 实现通过 lanproxy 的 API 实时创建端口映射关系.
     #  可以先查看有没有和当前服务器处在同一个网段的 lanproxy客户端, 也就是有没有可用的channels
     port_maps = obj.server.right_ports.all()
+    host_port_map = {}
+    for i,ip_port in enumerate(ips):
+        host_port_map[str(ip_port.ip)]=ssh_port
     for i, port_map in enumerate(port_maps):
-        if i == 0:
-            # print("port_map:")
-            pass
         if port_map.rightPort == ssh_port:
             # print(" " * 10, "|", "-" * 10, f"{i}.", port_map)
             _ips = port_map.left.ips.all()
             for ip in _ips:
-                # generate_modal(ip, port_map.leftPort)
-                pass
+                host_port_map[str(ip.ip)]=port_map.leftPort
     IPOptions = ""
-    for i,_ip in enumerate(ips):
+    for host,port in host_port_map.items():
         selected = "selected" if i == 0 else ""
         # 窗口标题：备注 + IP
         remark = obj.server.remark if obj.server.remark else obj.server.code
-        title = f"{remark} { _ip.ip}".strip()
-        IPOptions += f'<option value="{_ip.id}" data-ip="{_ip.ip}" data-title="{title}" {selected}>{_ip.ip}</option>'
+        title = f"{remark} { host }".strip()
+        _id = str(host)+":"+str(port)
+        IPOptions += f'<option value="{_id}" data-ip="{host}" data-port="{port}" data-title="{title}" {selected}>{_id}</option>'
 
     UserOptions = ""
     for i,_user in enumerate(users):
@@ -102,15 +100,15 @@ def ssh(request):
                         }
                         
                         const host = selectedHost.getAttribute('data-ip');
+                        const port = selectedHost.getAttribute('data-port');
                         const title = selectedHost.getAttribute('data-title');
                         const username = selectedUser.getAttribute('data-username');
                         const password = selectedUser.getAttribute('data-password');
-                        const port = %s;
                         
                         openSsh(host, port, username, password, title);
                     }
                 </script>
             </body>
             </html>
-               ''' % (IPOptions, UserOptions, ssh_port)
+               ''' % (IPOptions, UserOptions)
     return HttpResponse(html_txt)
