@@ -40,7 +40,8 @@ class ServerNew(NetDevice):
         (1, '阿里云'),
         (2, '腾讯云'),
         (3, '哈密市希望科技有限公司'),
-        (4, '新疆丝路融创网络科技有限公司（局域网）')
+        (4, '新疆丝路融创网络科技有限公司（局域网）'),
+        (5, '政务云')
     )
     hoster = models.PositiveSmallIntegerField(choices=hosterOptions, null=True, blank=True, verbose_name="托管方")
     bios = fields.PasswordInputField(verbose_name="BIOS", max_length=32, null=True, blank=True)
@@ -49,7 +50,7 @@ class ServerNew(NetDevice):
     def system_count(self):
         return self.systems.count()
 
-    system_count.short_description = "承载系统数量"
+    system_count.short_description = "系统"
 
     class Meta:
         verbose_name = "物理服务器"

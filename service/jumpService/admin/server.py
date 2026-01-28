@@ -42,8 +42,8 @@ class ServerStatusAdmin(admin.ModelAdmin):
 
 @admin.register(ServerNew)
 class ServerAdmin(BaseAdmin):
-    list_display = ["id", 'code', 'system_count', 'cabinet', "hosts", 'remark', 'bios',
-                    "mac", 'hoster', "updatedAt", "createdAt", "deletedAt"
+    list_display = ["id", 'code', 'system_count',  "hosts",'hoster', 'remark', 'cabinet','bios',
+                    "mac",  "updatedAt", "createdAt", "deletedAt"
                     ]
     list_display_links = ['remark', 'hoster']
     list_filter = ['hoster', 'cabinet__room', 'cabinet', 'updatedAt', 'createdAt', 'deletedAt']
@@ -150,8 +150,10 @@ class ServerAdmin(BaseAdmin):
         'id': FieldOptions.UUID,
         'code': {
             'fixed': 'left',
-            'min_width': '98px',
-            'align': 'center'
+            'min_width': '132px',
+            'align': 'left',
+            "resizeable": True,
+            "show_overflow_tooltip": True
         },
         'createdAt': {
             'min_width': '180px',
