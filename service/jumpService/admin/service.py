@@ -41,9 +41,9 @@ class ServiceTypeAdmin(BaseAdmin):
                 uri = "http://"
                 uri += f"{ipObj.ip}:{obj.port}"
                 if len(ips) == 1:
-                    res += f"""<a target="_blank" href="{uri}" >入口</a>"""
+                    res += f"""<a target="_blank" href="{uri}" >入口</a><button>复制</button>"""
                 else:
-                    res += f"""<a target="_blank" href="{uri}" >入口{i}</a></br>"""
+                    res += f"""<a target="_blank" href="{uri}" >入口{i}</a><button>复制</button></br>"""
             return res
         return None
 
@@ -272,14 +272,27 @@ class ServiceAdmin(AjaxAdmin):
                     'deletedAt']
     search_fields = ['system', 'port', 'remark']
     list_filter = ['_type', 'system__image', 'system__server']
+    list_filter_multiples = ('_type',)
     actions = ['migrate', 'test_action', ]
     ordering = ('-updatedAt', '-createdAt',)
     inlines = [ServiceURLInlineAdmin, ServiceUserInlineAdmin]
 
     def _url(self, obj):
         res = ""
+        _full_urls  = {}
         for url in obj.urls.all():
-            res += f"""<a target="_blank" style="margin-right:10px;" href="{url.get_full_url()}" >{url.name or url.get_full_url()}</a>"""
+            _urls = url.get_full_url()
+            for net_work_remark,_url in _urls.items():
+                if url.name:
+                    verbose_name = str(url.name)+f"({net_work_remark})"
+                else:
+                    verbose_name = net_work_remark
+                _full_urls[verbose_name] = _url
+        print(obj.id)
+        for name,full_url in _full_urls.items():
+            print("\t",name, full_url)
+            res += f"""<a target="_blank" style="margin-right:10px;" href="{full_url}" >{name or full_url}</a>"""
+            print("\t\t",res)
         return res
 
     _url.short_description = "访问地址"

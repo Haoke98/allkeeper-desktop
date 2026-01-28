@@ -62,17 +62,30 @@ class ServiceURL(BaseModel):
 
     def get_full_url(self):
         """获取完整的URL"""
+        _urls = {}
         if self.domain:
             url = f"{self.protocol.name}://{self.domain}"
             if self.path:
                 url += self.path
-        else:
+            _urls["域名"]=url
+        elif self.host:
             url = f"{self.protocol.name}://{self.host}"
             if self.port:
                 url += f":{self.port}"
             if self.path:
                 url += self.path
-        return url
+            _urls["IP+PORT"]=url
+        else:
+            ips = self.service.system.server.ips.all()
+            for ip in ips:
+                if ip.ip:
+                    url = f"{self.protocol.name}://{ip.ip}"
+                    if self.port:
+                        url += f":{self.port}"
+                    if self.path:
+                        url += self.path
+                    _urls[ip.net.remark]=url
+        return _urls
 
     def resolve_domain(self):
         """解析域名获取IP地址"""
