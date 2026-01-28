@@ -31,7 +31,7 @@ OPTIONS = {
     'argv_emulation': True,
     'strip': True,
     'iconfile': 'macos_big_sur_safe_folder_icon_186055.icns',  # uncomment to include an icon
-    'includes': ['django', 'webssh'],
+    'includes': ['django'],
     'excludes': ['_pytest', 'pdb', 'unittest', 'doctest'],
     'plist': {
         'CFBundleName': 'AllKeeper',

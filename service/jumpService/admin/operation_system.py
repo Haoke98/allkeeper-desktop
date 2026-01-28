@@ -98,14 +98,14 @@ class UserInlineAdmin(admin.TabularInline):
 
 @admin.register(OperationSystem)
 class OperationSystemAdmin(BaseAdmin):
-    list_display = ['id', 'image', 'server', 'open_webssh', 'sshPort',
+    list_display = ['id', 'image', 'server', 'open_ssh', 'sshPort',
                     'updatedAt', 'createdAt', 'deletedAt']
     list_filter = ['server', 'image', 'server__remark']
     search_fields = ['server__code', 'server__remark', 'server__ips__ip']
     ordering = ('-updatedAt',)
     # inlines = [UserInlineAdmin]
 
-    def open_webssh(self, obj: OperationSystem):
+    def open_ssh(self, obj: OperationSystem):
         modals = []
         modal = ModalDialog()
         modal.width = "32%"
@@ -120,7 +120,7 @@ class OperationSystemAdmin(BaseAdmin):
         modals.append(modal)
         return MultipleCellDialog(modals)
 
-    open_webssh.short_description = "远程桌面/SSH"
+    open_ssh.short_description = "远程桌面/SSH"
 
     def formatter(self, obj, field_name, value):
         # 这里可以对value的值进行判断，比如日期格式化等
@@ -160,7 +160,7 @@ class OperationSystemAdmin(BaseAdmin):
         },
         'rootUsername': FieldOptions.USER_NAME,
         'rootPassword': FieldOptions.PASSWORD,
-        'open_webssh': {
+        'open_ssh': {
             'min_width': '120px',
             'align': 'center'
         },

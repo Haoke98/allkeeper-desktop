@@ -17,6 +17,7 @@ import click
 import psutil
 import requests
 import webview
+#example  this  is test.
 
 HOME_DIR = os.path.expanduser("~")
 APP_HOME_DIR = os.path.join(HOME_DIR, 'all-keeper')
@@ -26,8 +27,7 @@ if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)
     print('Created log directory: {}'.format(LOG_DIR))
 
-# 用于存储webssh进程PID的字典
-webssh_pids = {}
+
 service_pids = []
 
 
@@ -40,7 +40,7 @@ def kill_process(pid):
         print("No such process")
 
 
-def start_service(namespace: str = "WebSSH_Service", command: list = None):
+def start_service(namespace: str = "Service", command: list = None):
     # 启动服务进程
     stdout_fp = os.path.join(LOG_DIR, f"{namespace}_stdout.txt")
     stderr_fp = os.path.join(LOG_DIR, f"{namespace}_stderr.txt")
@@ -137,7 +137,6 @@ def on_window_start(window: webview.Window, dev_mode: bool, lan_access: bool, po
     print("Lan Access:", lan_access, "Host:", host)
 
     if dev_mode:
-        start_service(namespace="WebSSH", command=['wssh', f'--port=9080', '--xsrf=False', f'--address={host}'])
         manage_script = os.path.join(BASE_DIR, 'service', 'manage.py')
         start_service(namespace="Django",
                       command=[f'python',
@@ -148,17 +147,11 @@ def on_window_start(window: webview.Window, dev_mode: bool, lan_access: bool, po
             print("当前系统是Windows")
             print("CWD:", os.getcwd())
             service_dir = os.path.join(BASE_DIR, "services")
-            start_service(namespace="WebSSH",
-                          command=[os.path.join(service_dir, 'wssh.exe'),
-                                   f'--port=9080', '--xsrf=False', f'--address={host}'])
             start_service(namespace="Django",
                           command=[os.path.join(service_dir, 'allkeeper-django.exe'),
                                    'runserver', f'{host}:{port}', '--noreload'])
         else:
             print("当前系统不是Windows")
-            start_service(namespace="WebSSH",
-                          command=['./services/wssh', f'--port=9080',
-                                   '--xsrf=False', f'--address={host}'])
             start_service(namespace="Django",
                           command=['./services/allkeeper-django', 'runserver',
                                    f'{host}:{port}', '--noreload'])

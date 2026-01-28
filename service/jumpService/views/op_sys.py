@@ -47,36 +47,14 @@ def ssh(request):
             for ip in _ips:
                 # generate_modal(ip, port_map.leftPort)
                 pass
-    submit_txt = "连接"
-    iframe = ""
-    selectedHostId = request.POST.get('hostname')
-    selectedUserId = request.POST.get('user')
-    if request.method == 'POST':
-        _ip = ips.filter(id=request.POST.get('hostname')).first()
-        # FIXME: 记得及时修复, 从SystemUser选择进行
-        hostname = _ip.ip
-        user = users.filter(id=request.POST.get('user')).first()
-        username = user.username
-        # FIXME: 部分root账户会有密钥登录方式, 密码登录无法成功
-        password = user.password
-        print(username, password)
-        # Base64编码
-        encoded_pwd = base64.b64encode(password.encode('utf-8')).decode('utf-8')
-        # FIXME: [高危敏感信息泄漏漏洞] 必须即使改成后端创建session后,再从前端通过session访问.
-        # 这里的url可以写死，也可以用django的反向获取url，可以根据model的数据，传到url中
-        web_ssh_url = "http://localhost:9080?hostname={}&port={}&username={}&password={}".format(hostname, ssh_port,
-                                                                                                 username,
-                                                                                                 encoded_pwd)
-        iframe = f'''<iframe src="{web_ssh_url}" style="width:100%;height:92vh;"/>'''
-        submit_txt = "重新连接"
     IPOptions = ""
-    for _ip in ips:
-        selected = "selected" if str(_ip.id) == str(selectedHostId) else ""
+    for i,_ip in enumerate(ips):
+        selected = "selected" if i == 0 else ""
         IPOptions += f'<option value="{_ip.id}" data-ip="{_ip.ip}" {selected}>{_ip.ip}</option>'
 
     UserOptions = ""
-    for _user in users:
-        selected = "selected" if str(_user.id) == str(selectedUserId) else ""
+    for i,_user in enumerate(users):
+        selected = "selected" if i==0 else ""
         # 对密码进行转义防止 HTML 属性截断
         safe_pwd = _user.password.replace('"', '&quot;').replace("'", "&#39;")
         UserOptions += f'<option value="{_user.id}" data-username="{_user.username}" data-password="{safe_pwd}" {selected}>{_user.username}</option>'
