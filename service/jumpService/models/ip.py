@@ -14,7 +14,7 @@ from .net import Net
 
 
 class IPAddress(BaseModel):
-    net = fields.ForeignKey(to=Net, verbose_name="所属网段", on_delete=models.CASCADE, null=True, blank=True)
+    net = fields.ForeignKey(to=Net, verbose_name="所属网段", on_delete=models.CASCADE, null=True, blank=True,related_name="ips")
     ip = fields.CharField(verbose_name="IP地址", null=True, blank=False, slot_text="IPV4", slot="prepend",
                           max_length=15)
     device = fields.ForeignKey(verbose_name="网络设备", to=NetDevice, on_delete=models.CASCADE, null=True, blank=False,

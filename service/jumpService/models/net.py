@@ -13,6 +13,7 @@ from simplepro.models import BaseModel
 
 
 class Net(BaseModel):
+    gatewayIP = fields.CharField(max_length=15,verbose_name="网关地址",default=None,null=True,blank=True)
     content = fields.CharField(max_length=18, verbose_name="CIDR")
     netmask = fields.CharField(max_length=15, verbose_name="子网俺码", default="255.255.255.0")
     remark = fields.CharField(verbose_name="备注", max_length=100, null=True, blank=True)
@@ -44,6 +45,12 @@ class Net(BaseModel):
         return network.num_addresses
 
     address_count.short_description = "地址数量"
+
+    def be_in_use_count(self):
+        n = self.ips.count()
+        return n
+
+    be_in_use_count.short_description = "已用地址数"
 
     def broadcast_address(self):
         network = ipaddress.IPv4Network(self.content)

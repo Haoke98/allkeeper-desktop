@@ -35,7 +35,7 @@ class NetWorkForm(ModelForm):
 
     class Meta:
         model = Net
-        fields = ['remark', 'netmask']
+        fields = ['remark', 'netmask','gatewayIP']
 
 
 class NetFilter(admin.SimpleListFilter):
@@ -70,7 +70,7 @@ class NetFilter(admin.SimpleListFilter):
 
 @admin.register(Net)
 class NetWorkAdmin(admin.ModelAdmin):
-    list_display = ['id', 'content', 'netmask', 'is_global', '_class', 'address_count', 'remark', 'broadcast_address',
+    list_display = ['id', 'content', 'netmask', 'gatewayIP','is_global', '_class', 'address_count','be_in_use_count', 'remark', 'broadcast_address',
                     'createdAt', 'updatedAt',
                     'deletedAt']
     list_filter = ('netmask', NetFilter)
@@ -106,6 +106,10 @@ class NetWorkAdmin(admin.ModelAdmin):
             'width': '180px',
             'align': 'left'
         },
+        'gatewayIP':{
+            'width': '180px',
+            'align': 'left'
+        },
         'is_global': {
             'width': '120px',
             'align': 'center'
@@ -129,6 +133,10 @@ class NetWorkAdmin(admin.ModelAdmin):
         'beatsPwd': {
             'width': '200px',
             'align': 'left'
+        },
+        'be_in_use_count':{
+            'width': '120px',
+            'align': 'center'
         },
         'remark': {
             'width': '240px',
