@@ -50,7 +50,10 @@ def ssh(request):
     IPOptions = ""
     for i,_ip in enumerate(ips):
         selected = "selected" if i == 0 else ""
-        IPOptions += f'<option value="{_ip.id}" data-ip="{_ip.ip}" {selected}>{_ip.ip}</option>'
+        # 窗口标题：备注 + IP
+        remark = obj.server.remark if obj.server.remark else obj.server.code
+        title = f"{remark} { _ip.ip}".strip()
+        IPOptions += f'<option value="{_ip.id}" data-ip="{_ip.ip}" data-title="{title}" {selected}>{_ip.ip}</option>'
 
     UserOptions = ""
     for i,_user in enumerate(users):
@@ -99,11 +102,12 @@ def ssh(request):
                         }
                         
                         const host = selectedHost.getAttribute('data-ip');
+                        const title = selectedHost.getAttribute('data-title');
                         const username = selectedUser.getAttribute('data-username');
                         const password = selectedUser.getAttribute('data-password');
                         const port = %s;
                         
-                        openSSH(host, port, username, password);
+                        openSsh(host, port, username, password, title);
                     }
                 </script>
             </body>

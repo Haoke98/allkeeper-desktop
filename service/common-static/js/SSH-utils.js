@@ -1,14 +1,36 @@
+function openSSH_ByLink(host, port, username) {
+    const sshUrl = `ssh://${username}@${host}:${port}`;
+
+    const link = document.createElement('a');
+    link.href = sshUrl;
+    // target="_self" 表示在当前标签页跳转（即触发协议），_blank 可能会被拦截或表现不同
+    link.target = '_self';
+
+    // 兼容 Firefox，需要添加到 DOM 才能点击
+    document.body.appendChild(link);
+    link.click();
+
+    console.log("正在尝试打开Link:", sshUrl);
+
+    // 清理
+    document.body.removeChild(link);
+}
+
 /**
  * 触发 SSH 协议跳转
  * @param {string} host 主机 IP
  * @param {number} port 端口
  * @param {string} username 用户名
  * @param {string} password 密码
+ * @param {string} title 窗口标题
  */
-function openSSH(host, port, username, password) {
+function openSsh(host, port, username, password, title) {
     const encodedPassword = password ? encodeURIComponent(password) : '';
     const authPart = encodedPassword ? `${username}:${encodedPassword}@` : `${username}@`;
-    const sshUrl = `ssh://${authPart}${host}:${port}?title=Server-${host}`;
+    
+    // 如果没有传入 title，则使用默认的
+    const displayTitle = title || `Server-${host}`;
+    const sshUrl = `ssh://${authPart}${host}:${port}?title=${encodeURIComponent(displayTitle)}`;
 
     console.log("正在尝试打开链接:", sshUrl);
 
