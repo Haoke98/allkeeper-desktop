@@ -61,6 +61,40 @@ function openSsh(host, port, username, password, title) {
 }
 
 /**
+ * 复制文本到剪贴板
+ * @param {string} text 
+ */
+function copyToClipboard(text) {
+    if (!text) return;
+    
+    // 优先使用现代 Clipboard API
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(() => {
+            console.log('密码已成功复制到剪贴板');
+        }).catch(err => {
+            console.error('无法复制代码到剪贴板: ', err);
+        });
+    } else {
+        // 兜底方案：使用传统的 textarea 方式
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-999999px";
+        textArea.style.top = "-999999px";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            console.log('密码已成功复制到剪贴板 (兜底方案)');
+        } catch (err) {
+            console.error('无法复制代码到剪贴板 (兜底方案): ', err);
+        }
+        document.body.removeChild(textArea);
+    }
+}
+
+/**
  * 触发远程桌面 (RDP) 协议跳转
  * 根据当前客户端操作系统环境选择不同的处理方式
  * @param {string} host 主机 IP
@@ -70,6 +104,9 @@ function openSsh(host, port, username, password, title) {
  * @param {string} title 窗口标题
  */
 function openRdp(host, port, username, password, title) {
+    // 自动将密码复制到剪贴板，方便用户在客户端弹出框中直接粘贴
+    copyToClipboard(password);
+    
     const userAgent = window.navigator.userAgent.toLowerCase();
     const isMac = userAgent.includes('macintosh') || userAgent.includes('mac os x');
 
