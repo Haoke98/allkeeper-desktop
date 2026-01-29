@@ -7,38 +7,31 @@
 A desktop version for the project allkeeper(https://github.com/Haoke98/Allkeeper.git)
 ![](assets/截屏2024-08-02%2017.28.03.png)
 ![](assets/截屏2024-08-02%2017.08.14.png)
-## Build
 
-* It is need to install `libffi`
-
-  The following uses MacOS as an example for demonstration:
-  ```shell
-  brew install libffi
-  ```
-  create link:
-  ```shell
-  sudo ln -s /opt/homebrew/opt/libffi/lib/libffi.8.dylib /usr/local/lib/libffi.8.dylib
-  ```
-  build:
-  ```shell
-  python setup.py py2app
-  ```
-
-## Develop Plan & TODO
-
-* [x] 已经实现了与外部 SSH 客户端联动 : [electerm](https://github.com/electerm/electerm.git)
-  * [x] 支持lrzsz
-* [ ] 实现与Microsoft Remote Desktop联动
-  * [ ] 实现用 ms-rd://协议来唤醒
-* [ ] 打通与内网穿透工具:Lanproxy 之间的联动
-  * [ ] 端口映射配置的同步
-  * [ ] 实现基于接口来动态配置端口映射规则
-* [ ] 集成各大流行数据库客户端
-* [ ] 服务器之间进行双重加密通信
-* [ ] Offline mode
-    * [ ] change the db to sqlite3
-    * [ ] data sync logic
+## 功能 & Develop Plan & TODO
+* [ ] 服务器
+  * [ ] 远程控制
+    * [x] 已经实现了与外部 SSH 客户端联动 : [electerm](https://github.com/electerm/electerm.git)
+      * [x] 支持lrzsz
+    * [ ] 实现与Microsoft Remote Desktop联动
+      * [ ] 实现用 ms-rd://协议来唤醒
+* [ ] 网络
+  * [ ] 内网穿透
+    * [ ] 打通与内网穿透工具:Lanproxy 之间的联动
+      * [ ] 端口映射配置的同步
+      * [ ] 实现基于接口来动态配置端口映射规则
+* [ ] 数据库
+  * [ ] 实现各大流行数据库客户端之间的联动
+    * [ ] 协议/链接唤醒
+* [ ] 数据存储
+  * [X] Offline mode
+      * [X] change the db to sqlite3
+  * [ ] data sync logic
+    * [ ] 服务器之间进行双重加密通信
 * [ ] 实现账号体系和APP,网页,小程序...等等之间的多对一的关系
+
+
+
   ```mermaid
   flowchart LR
     P1[王某某] 
@@ -103,6 +96,22 @@ A desktop version for the project allkeeper(https://github.com/Haoke98/Allkeeper
     A7-->AS3
     A8-->AS3
     A9-->AS3
+  ```
+## Build
+
+* It is need to install `libffi`
+
+  The following uses MacOS as an example for demonstration:
+  ```shell
+  brew install libffi
+  ```
+  create link:
+  ```shell
+  sudo ln -s /opt/homebrew/opt/libffi/lib/libffi.8.dylib /usr/local/lib/libffi.8.dylib
+  ```
+  build:
+  ```shell
+  python setup.py py2app
   ```
 
 ## 引用 & 感谢
