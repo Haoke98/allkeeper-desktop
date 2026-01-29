@@ -7,12 +7,13 @@
 @disc:
 ======================================="""
 
+import binascii
 import html
 import os
+import re
 import platform
 import subprocess
 import tempfile
-
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
@@ -145,19 +146,28 @@ def rdp_open(request):
         port = request.POST.get('port')
         username = request.POST.get('username')
         password = request.POST.get('password')
+        title = request.POST.get('title', 'connection')
+
+        # 清理 title 确保其作为文件名是安全的
+        safe_title = re.sub(r'[\\/*?:"<>|]', '_', title)
+
+        # 针对 password 51:b: 格式，需要将密码转换为 UTF-16LE 编码的二进制，再转为 Hex 字符串
+        password_bytes = password.encode('utf-16-le')
+        hex_password = binascii.hexlify(password_bytes).decode('ascii')
 
         # 构造 .rdp 文件内容
-        # password 51:s: 为某些版本的 Microsoft Remote Desktop 支持的明文密码格式
         rdp_content = f"full address:s:{host}:{port}\n" \
                       f"username:s:{username}\n" \
-                      f"password 51:s:{password}\n" \
+                      f"password 51:b:{hex_password}\n" \
                       f"prompt for credentials:i:0\n" \
                       f"authentication level:i:0\n"
 
-        # 创建临时文件
-        with tempfile.NamedTemporaryFile(suffix='.rdp', delete=False) as f:
+        # 创建带有特定名称的临时文件
+        temp_dir = tempfile.gettempdir()
+        temp_path = os.path.join(temp_dir, f"{safe_title}.rdp")
+        
+        with open(temp_path, 'wb') as f:
             f.write(rdp_content.encode('utf-8'))
-            temp_path = f.name
 
         try:
             current_os = platform.system()

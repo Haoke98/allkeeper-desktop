@@ -119,6 +119,7 @@ function openRdp(host, port, username, password, title) {
         formData.append('port', port);
         formData.append('username', username);
         formData.append('password', password);
+        formData.append('title', title);
 
         fetch('/jump_service/op_sys/rdp/open', {
             method: 'POST',
