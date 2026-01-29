@@ -13,8 +13,9 @@ A desktop version for the project allkeeper(https://github.com/Haoke98/Allkeeper
   * [ ] 远程控制
     * [x] 已经实现了与外部 SSH 客户端联动 : [electerm](https://github.com/electerm/electerm.git)
       * [x] 支持lrzsz
-    * [ ] 实现与Microsoft Remote Desktop联动
-      * [ ] 实现用 ms-rd://协议来唤醒
+    * [X] 实现与Microsoft Remote Desktop联动
+      * [X] 实现用 rdp 文件来传递连接信息 
+      * [X] 实现用 ms-rd://协议来唤醒
 * [ ] 网络
   * [ ] 内网穿透
     * [ ] 打通与内网穿透工具:Lanproxy 之间的联动
