@@ -6,7 +6,7 @@
 
    * 在 HTML 模板中注入 `is_windows` 标识，并根据该标识切换按钮文字和点击事件。
 
-2. **修改 SSH-utils.js**:
+2. **修改 remoteControlUtils.js**:
 
    * 新增 `openRdp` 函数。
 

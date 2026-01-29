@@ -1,4 +1,4 @@
-1. **更新 SSH-utils.js**:
+1. **更新 remoteControlUtils.js**:
 
    * 将 `openRdp` 中的协议从 `ms-rd://` 更换为官方支持的 `rdp://`。
 
