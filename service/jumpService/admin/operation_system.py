@@ -98,7 +98,7 @@ class UserInlineAdmin(admin.TabularInline):
 
 @admin.register(OperationSystem)
 class OperationSystemAdmin(BaseAdmin):
-    list_display = ['id', 'image', 'server', 'open_ssh', 'sshPort',
+    list_display = ['id', 'image', 'server', 'open_ssh', 'remoteAccessPort',
                     'updatedAt', 'createdAt', 'deletedAt']
     list_filter = ['server', 'image', 'server__remark']
     list_filter_multiples = ('server','image','server__remark')
@@ -148,7 +148,9 @@ class OperationSystemAdmin(BaseAdmin):
         'deletedAt': FieldOptions.DATE_TIME,
         'server': {
             'min_width': '280px',
-            'align': 'left'
+            'align': 'left',
+            "resizeable": True,
+            "show_overflow_tooltip": True
         },
         'sshPort': {
             'min_width': '140px',
