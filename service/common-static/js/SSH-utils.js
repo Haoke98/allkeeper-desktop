@@ -62,7 +62,7 @@ function openSsh(host, port, username, password, title) {
 
 /**
  * 触发远程桌面 (RDP) 协议跳转
- * 针对 macOS 上的 Microsoft Remote Desktop Beta / Windows App 优化
+ * 根据当前客户端操作系统环境选择不同的处理方式
  * @param {string} host 主机 IP
  * @param {number} port 端口
  * @param {string} username 用户名
@@ -70,27 +70,43 @@ function openSsh(host, port, username, password, title) {
  * @param {string} title 窗口标题
  */
 function openRdp(host, port, username, password, title) {
-    // 针对 macOS Beta 版/Windows App，采用 ms-rd:connect 协议
-    // 注意：不再使用双斜杠 //，协议名后直接跟命令 connect
-    // 参数说明：v=地址:端口, u=用户名, p=密码
-    const encodedUser = strictEncodeURIComponent(username);
-    const encodedPassword = password ? strictEncodeURIComponent(password) : '';
-    
-    const rdpUrl = `ms-rd:connect?v=${host}:${port}&u=${encodedUser}&p=${encodedPassword}`;
-    alert(rdpUrl);
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    const isMac = userAgent.includes('macintosh') || userAgent.includes('mac os x');
 
-    console.log("正在尝试打开官方 RDP 链接:", rdpUrl.replace(encodedPassword, '******'));
+    if (isMac) {
+        // 如果是 macOS 环境，调用后端接口生成 .rdp 文件并执行 open 命令
+        console.log("检测到 macOS 环境，正在通过后端生成 RDP 文件并打开...");
+        
+        const formData = new URLSearchParams();
+        formData.append('host', host);
+        formData.append('port', port);
+        formData.append('username', username);
+        formData.append('password', password);
 
-    const link = document.createElement('a');
-    link.href = rdpUrl;
-    link.target = '_top';
-    link.style.display = 'none';
-    document.body.appendChild(link);
-    link.click();
+        fetch('/jump_service/op_sys/rdp/open', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: formData.toString()
+        }).then(response => {
+            if (!response.ok) {
+                return response.text().then(text => { throw new Error(text) });
+            }
+            console.log("RDP 文件已成功在 macOS 上打开");
+        }).catch(error => {
+            console.error("无法打开 RDP 连接:", error);
+            alert("无法打开 RDP 连接: " + error.message);
+        });
+    } else {
+        // 如果是 Windows 环境，继续使用标准的 rdp:// 协议唤醒
+        console.log("检测到 Windows 环境，正在通过 rdp:// 协议唤醒...");
+        
+        // 格式: rdp://full%20address=s:host:port&username=s:user
+        const encodedUser = encodeURIComponent(username);
+        const rdpUrl = `rdp://full%20address=s:${host}:${port}&username=s:${encodedUser}`;
 
-    setTimeout(() => {
-        if (link.parentNode) {
-            document.body.removeChild(link);
-        }
-    }, 100);
+        console.log("正在尝试通过标准协议唤醒 RDP:", rdpUrl);
+        window.location.href = rdpUrl;
+    }
 }

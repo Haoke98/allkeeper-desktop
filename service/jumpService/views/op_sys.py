@@ -8,6 +8,10 @@
 ======================================="""
 
 import html
+import os
+import platform
+import subprocess
+import tempfile
 
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -129,3 +133,45 @@ def ssh(request):
             </html>
                ''' % (IPOptions, UserOptions, "打开远程桌面" if is_windows else "打开 SSH 客户端", "true" if is_windows else "false")
     return HttpResponse(html_txt)
+
+
+@csrf_exempt
+def rdp_open(request):
+    """
+    针对 macOS 客户端，生成 .rdp 文件并使用 open 命令打开
+    """
+    if request.method == 'POST':
+        host = request.POST.get('host')
+        port = request.POST.get('port')
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        # 构造 .rdp 文件内容
+        # password 51:s: 为某些版本的 Microsoft Remote Desktop 支持的明文密码格式
+        rdp_content = f"full address:s:{host}:{port}\n" \
+                      f"username:s:{username}\n" \
+                      f"password 51:s:{password}\n" \
+                      f"prompt for credentials:i:0\n" \
+                      f"authentication level:i:0\n"
+
+        # 创建临时文件
+        with tempfile.NamedTemporaryFile(suffix='.rdp', delete=False) as f:
+            f.write(rdp_content.encode('utf-8'))
+            temp_path = f.name
+
+        try:
+            current_os = platform.system()
+            if current_os == 'Darwin':
+                # macOS 使用 open 命令
+                subprocess.run(['open', temp_path], check=True)
+            elif current_os == 'Windows':
+                # Windows 环境下如果也想用这种方式，可以使用 mstsc
+                subprocess.run(['mstsc', temp_path], check=True)
+            else:
+                return HttpResponse(f"Unsupported OS: {current_os}", status=400)
+            
+            return HttpResponse("ok")
+        except Exception as e:
+            return HttpResponse(str(e), status=500)
+
+    return HttpResponse(status=405)
