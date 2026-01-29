@@ -121,7 +121,7 @@ class OperationSystemAdmin(BaseAdmin):
         modals.append(modal)
         return MultipleCellDialog(modals)
 
-    open_ssh.short_description = "远程桌面/SSH"
+    open_ssh.short_description = "远程控制"
 
     def formatter(self, obj, field_name, value):
         # 这里可以对value的值进行判断，比如日期格式化等
@@ -152,7 +152,7 @@ class OperationSystemAdmin(BaseAdmin):
             "resizeable": True,
             "show_overflow_tooltip": True
         },
-        'sshPort': {
+        'remoteAccessPort': {
             'min_width': '140px',
             'align': 'center'
         },
