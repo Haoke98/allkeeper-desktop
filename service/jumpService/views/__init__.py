@@ -15,7 +15,7 @@ from django.views.decorators.csrf import csrf_exempt
 from ..models import ServerStatus
 from .server import ServerViewSet
 from .net import network_topology
-from .op_sys import ssh,rdp_open
+from .op_sys import open_remote_access,rdp_open
 
 __all__ = ['ServerViewSet', 'network_topology', 'collect']
 

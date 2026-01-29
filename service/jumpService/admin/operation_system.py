@@ -109,7 +109,7 @@ class OperationSystemAdmin(BaseAdmin):
     def open_ssh(self, obj: OperationSystem):
         modals = []
         modal = ModalDialog()
-        modal.width = "32%"
+        modal.width = "40%"
         modal.height = "16vh"
         # 这个是单元格显示的文本
         modal.cell = f'<el-link type="primary">连接</el-link>'

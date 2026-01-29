@@ -21,7 +21,7 @@ from ..models import OperationSystem
 
 
 @csrf_exempt
-def ssh(request):
+def open_remote_access(request):
     print("Method:", request.method)
     print("GET:", request.GET)
     print("POST:", request.POST)
@@ -102,7 +102,7 @@ def ssh(request):
                         %s
                     </button>
                 </div>
-                <script src="/static/js/SSH-utils.js"></script>
+                <script src="/static/js/remoteControlUtils.js"></script>
                 <script>
                     const IS_WINDOWS = %s;
                     function handleOpenSsh() {
