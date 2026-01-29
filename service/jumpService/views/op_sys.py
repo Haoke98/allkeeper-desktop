@@ -7,6 +7,8 @@
 @disc:
 ======================================="""
 
+import html
+
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
@@ -45,20 +47,25 @@ def ssh(request):
             for ip in _ips:
                 host_port_map[str(ip.ip)]=port_map.leftPort
     IPOptions = ""
-    for host,port in host_port_map.items():
+    for i, (host, port) in enumerate(host_port_map.items()):
         selected = "selected" if i == 0 else ""
         # 窗口标题：备注 + IP
         remark = obj.server.remark if obj.server.remark else obj.server.code
         title = f"{remark} { host }".strip()
         _id = str(host)+":"+str(port)
-        IPOptions += f'<option value="{_id}" data-ip="{host}" data-port="{port}" data-title="{title}" {selected}>{_id}</option>'
+        safe_id = html.escape(_id)
+        safe_host = html.escape(str(host))
+        safe_port = html.escape(str(port))
+        safe_title = html.escape(title)
+        IPOptions += f'<option value="{safe_id}" data-ip="{safe_host}" data-port="{safe_port}" data-title="{safe_title}" {selected}>{safe_id}</option>'
 
     UserOptions = ""
     for i,_user in enumerate(users):
         selected = "selected" if i==0 else ""
-        # 对密码进行转义防止 HTML 属性截断
-        safe_pwd = _user.password.replace('"', '&quot;').replace("'", "&#39;")
-        UserOptions += f'<option value="{_user.id}" data-username="{_user.username}" data-password="{safe_pwd}" {selected}>{_user.username}</option>'
+        # 使用 html.escape 确保所有字符在 HTML data 属性中安全
+        safe_username = html.escape(_user.username)
+        safe_password = html.escape(_user.password)
+        UserOptions += f'<option value="{_user.id}" data-username="{safe_username}" data-password="{safe_password}" {selected}>{safe_username}</option>'
 
     html_txt = '''
             <!DOCTYPE html>
