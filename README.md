@@ -10,7 +10,7 @@ A desktop version for the project allkeeper(https://github.com/Haoke98/Allkeeper
 
 ## 功能 & Develop Plan & TODO
 * [ ] 服务器
-  * [ ] 远程控制
+  * [X] 远程控制
     * [x] 已经实现了与外部 SSH 客户端联动 : [electerm](https://github.com/electerm/electerm.git)
       * [x] 支持lrzsz
     * [X] 实现与Microsoft Remote Desktop联动
