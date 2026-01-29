@@ -40,7 +40,6 @@ function openSsh(host, port, username, password, title) {
     // 3. 构造标题（使用标准严格编码，因为 Electerm 会对查询参数进行解码）
     const displayTitle = title || `Server-${host}`;
     const sshUrl = `ssh://${authPart}${host}:${port}?title=${strictEncodeURIComponent(displayTitle)}`;
-    alert(sshUrl)
     // 调试日志（对密码脱敏）
     console.log("正在尝试打开兼容性链接:", sshUrl.replace(encodedPassword, '******'));
 
