@@ -17,7 +17,7 @@ from simplepro.decorators import button
 from simplepro.dialog import ModalDialog
 from simpleui.admin import AjaxAdmin
 
-from ..models import Service, ServiceUser, ServiceType, ServerNew, OperationSystemImage, ElasticSearch, ServiceURL, Protocol
+from ..models import Service, ServiceUser, ServiceType, ServerNew, OperationSystemImage,ServiceURL, Protocol
 from ..forms import ServiceURLForm
 
 
@@ -443,32 +443,32 @@ class ServiceAdmin(AjaxAdmin):
 
     @button(type='danger', short_description='数据迁移', enable=True, confirm="您确定要生成吗？")
     def migrate(self, request, queryset: QuerySet):
-        ess: list[ElasticSearch] = ElasticSearch.objects.all()
-        _type = ServiceType.objects.filter(name="ElasticSearch").first()
-        for es in ess:
-            obj = Service()
-            obj._type = _type
-            system_image = OperationSystemImage.objects.filter(name="CentOS", version="7").first()
-            server: ServerNew = es.server
-            system = server.systems.filter(image=system_image).first()
-            obj.system = system
-            obj.port = es.port
-            obj.remark = es.remark
-            if es.info:
-                obj.info = es.info + "<br/>"
-            else:
-                obj.info = ""
-            if es.kibanaPwd:
-                obj.info += "kibana_system:" + es.kibanaPwd + "<br/>"
-            if es.apmPwd:
-                obj.info += "apm_system:" + es.apmPwd + "<br/>"
-            if es.logstashPwd:
-                obj.info += "logstash_system:" + es.logstashPwd + "<br/>"
-            if es.beatsPwd:
-                obj.info += "beats_system:" + es.beatsPwd + "<br/>"
-            if es.remoteMonitoringPwd:
-                obj.info += "remote_monitoring_user:" + es.remoteMonitoringPwd + "<br/>"
-            obj.save()
+        # ess: list[ElasticSearch] = ElasticSearch.objects.all()
+        # _type = ServiceType.objects.filter(name="ElasticSearch").first()
+        # for es in ess:
+        #     obj = Service()
+        #     obj._type = _type
+        #     system_image = OperationSystemImage.objects.filter(name="CentOS", version="7").first()
+        #     server: ServerNew = es.server
+        #     system = server.systems.filter(image=system_image).first()
+        #     obj.system = system
+        #     obj.port = es.port
+        #     obj.remark = es.remark
+        #     if es.info:
+        #         obj.info = es.info + "<br/>"
+        #     else:
+        #         obj.info = ""
+        #     if es.kibanaPwd:
+        #         obj.info += "kibana_system:" + es.kibanaPwd + "<br/>"
+        #     if es.apmPwd:
+        #         obj.info += "apm_system:" + es.apmPwd + "<br/>"
+        #     if es.logstashPwd:
+        #         obj.info += "logstash_system:" + es.logstashPwd + "<br/>"
+        #     if es.beatsPwd:
+        #         obj.info += "beats_system:" + es.beatsPwd + "<br/>"
+        #     if es.remoteMonitoringPwd:
+        #         obj.info += "remote_monitoring_user:" + es.remoteMonitoringPwd + "<br/>"
+        #     obj.save()
 
         return {
             'state': True,
