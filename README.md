@@ -28,6 +28,8 @@ A desktop version for the project allkeeper(https://github.com/Haoke98/Allkeeper
 
 * [x] 已经实现了与外部 SSH 客户端联动 : [electerm](https://github.com/electerm/electerm.git)
   * [x] 支持lrzsz
+* [ ] 实现与Microsoft Remote Desktop联动
+  * [ ] 实现用 ms-rd://协议来唤醒
 * [ ] 打通与内网穿透工具:Lanproxy 之间的联动
   * [ ] 端口映射配置的同步
   * [ ] 实现基于接口来动态配置端口映射规则
