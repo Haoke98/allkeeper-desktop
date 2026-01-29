@@ -24,8 +24,11 @@ def ssh(request):
     obj = OperationSystem.objects.get(id=_id)
     ips = obj.server.ips.all()
     users = obj.users.all()
-    # FIXME 这里需要先判断是否是Linux内核系统, 如果是Windows内核系统还得要用 远程桌面
-    ssh_port = obj.sshPort
+    # 判断是否为 Windows 系统
+    is_windows = obj.image and "Windows" in obj.image.name
+    # 如果是 Windows 默认 RDP 端口 3389，否则使用 SSH 端口
+    conn_port = 3389 if is_windows else obj.remoteAccessPort
+    
     for ip_port in ips:
         if ip_port.net is not None:
             if ip_port.net.is_global():
@@ -39,9 +42,9 @@ def ssh(request):
     port_maps = obj.server.right_ports.all()
     host_port_map = {}
     for i,ip_port in enumerate(ips):
-        host_port_map[str(ip_port.ip)]=ssh_port
+        host_port_map[str(ip_port.ip)]=conn_port
     for i, port_map in enumerate(port_maps):
-        if port_map.rightPort == ssh_port:
+        if port_map.rightPort == conn_port:
             # print(" " * 10, "|", "-" * 10, f"{i}.", port_map)
             _ips = port_map.left.ips.all()
             for ip in _ips:
@@ -90,10 +93,13 @@ def ssh(request):
                             %s
                         </select>
                     </form>
-                    <button type="button" class="btn-ssh" onclick="handleOpenSsh()">打开 SSH 客户端</button>
+                    <button type="button" class="btn-ssh" onclick="handleOpenSsh()">
+                        %s
+                    </button>
                 </div>
                 <script src="/static/js/SSH-utils.js"></script>
                 <script>
+                    const IS_WINDOWS = %s;
                     function handleOpenSsh() {
                         const hostSelect = document.getElementsByName('hostname')[0];
                         const userSelect = document.getElementsByName('user')[0];
@@ -112,10 +118,14 @@ def ssh(request):
                         const username = selectedUser.getAttribute('data-username');
                         const password = selectedUser.getAttribute('data-password');
                         
-                        openSsh(host, port, username, password, title);
+                        if (IS_WINDOWS) {
+                            openRdp(host, port, username, password, title);
+                        } else {
+                            openSsh(host, port, username, password, title);
+                        }
                     }
                 </script>
             </body>
             </html>
-               ''' % (IPOptions, UserOptions)
+               ''' % (IPOptions, UserOptions, "打开远程桌面" if is_windows else "打开 SSH 客户端", "true" if is_windows else "false")
     return HttpResponse(html_txt)

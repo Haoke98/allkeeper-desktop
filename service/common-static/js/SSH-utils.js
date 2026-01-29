@@ -59,3 +59,38 @@ function openSsh(host, port, username, password, title) {
         }
     }, 100);
 }
+
+/**
+ * 触发远程桌面 (RDP) 协议跳转
+ * 针对 macOS 上的 Microsoft Remote Desktop Beta / Windows App 优化
+ * @param {string} host 主机 IP
+ * @param {number} port 端口
+ * @param {string} username 用户名
+ * @param {string} password 密码
+ * @param {string} title 窗口标题
+ */
+function openRdp(host, port, username, password, title) {
+    // 针对 macOS Beta 版/Windows App，采用 ms-rd:connect 协议
+    // 注意：不再使用双斜杠 //，协议名后直接跟命令 connect
+    // 参数说明：v=地址:端口, u=用户名, p=密码
+    const encodedUser = strictEncodeURIComponent(username);
+    const encodedPassword = password ? strictEncodeURIComponent(password) : '';
+    
+    const rdpUrl = `ms-rd:connect?v=${host}:${port}&u=${encodedUser}&p=${encodedPassword}`;
+    alert(rdpUrl);
+
+    console.log("正在尝试打开官方 RDP 链接:", rdpUrl.replace(encodedPassword, '******'));
+
+    const link = document.createElement('a');
+    link.href = rdpUrl;
+    link.target = '_top';
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+
+    setTimeout(() => {
+        if (link.parentNode) {
+            document.body.removeChild(link);
+        }
+    }, 100);
+}
