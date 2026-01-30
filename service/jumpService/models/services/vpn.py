@@ -20,10 +20,10 @@ class VPNService(AbstractBaseServiceModel):
         ('pptp', 'PPTP'),
         ('sstp', 'SSTP'),
     )
-    vpn_type = models.CharField(max_length=20, choices=TYPE_CHOICES, verbose_name="VPN类型", default='openvpn')
-    protocol = models.CharField(max_length=10, choices=(('udp', 'UDP'), ('tcp', 'TCP')), default='udp', verbose_name="协议")
-    subnet = models.CharField(max_length=50, verbose_name="虚拟网段", placeholder="例如: 10.8.0.0/24", null=True, blank=True)
-    public_host = models.CharField(max_length=255, verbose_name="公网连接地址", placeholder="IP或域名", null=True, blank=True)
+    vpn_type = fields.CharField(max_length=20, choices=TYPE_CHOICES, verbose_name="VPN类型", default='openvpn')
+    protocol = fields.CharField(max_length=10, choices=(('udp', 'UDP'), ('tcp', 'TCP')), default='udp', verbose_name="协议")
+    subnet = fields.CharField(max_length=50, verbose_name="虚拟网段", placeholder="例如: 10.8.0.0/24", null=True, blank=True)
+    public_host = fields.CharField(max_length=255, verbose_name="公网连接地址", placeholder="IP或域名", null=True, blank=True)
     config_template = models.TextField(verbose_name="配置模板", null=True, blank=True)
 
     class Meta:
