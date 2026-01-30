@@ -147,10 +147,19 @@ class NetWorkAdmin(admin.ModelAdmin):
 
 @admin.register(NetDevice)
 class NetDeviceAdmin(BaseAdmin):
-    list_display = ['id', 'remark', 'mac', 'createdAt', 'updatedAt', 'deletedAt']
+    list_display = ['id','webControlAddress','webControlPassword', 'mac', 'createdAt', 'updatedAt', 'deletedAt']
     search_fields = ['id', 'remark', 'mac']
     ordering = ('-updatedAt',)
     inlines = [IPAddressInlineAdmin]
+    def formatter(self, obj, field_name, value):
+        # 这里可以对value的值进行判断，比如日期格式化等
+        if field_name == "webControlAddress":
+            if value:
+                return f"""<a href="{value}" target="_blank">点击跳转</a>"""
+        if field_name == "webControlPassword":
+            if value:
+                return BaseAdmin.password(value)
+        return value
     fields_options = {
         'id': FieldOptions.UUID,
         'createdAt': FieldOptions.DATE_TIME,

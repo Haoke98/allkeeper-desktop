@@ -9,27 +9,19 @@
 from django.contrib import admin
 from simplepro.admin import BaseAdmin, FieldOptions
 
-from .net import IPAddressInlineAdmin
+from .net import IPAddressInlineAdmin, NetDeviceAdmin
 from ..models import Router
 
 
 @admin.register(Router)
-class RouterAdmin(BaseAdmin):
+class RouterAdmin(NetDeviceAdmin):
     list_display = ['code',
                     'webControlAddress', 'webControlPassword', 'remark', 'bios', 'hoster',
                     "updatedAt", "createdAt", "deletedAt", 'id']
     exclude = ['webControlUsername']
     inlines = [IPAddressInlineAdmin]
 
-    def formatter(self, obj, field_name, value):
-        # 这里可以对value的值进行判断，比如日期格式化等
-        if field_name == "webControlAddress":
-            if value:
-                return f"""<a href="{value}" target="_blank">点击跳转</a>"""
-        if field_name == "webControlPassword":
-            if value:
-                return BaseAdmin.password(value)
-        return value
+
 
     fields_options = {
         'id': FieldOptions.UUID,

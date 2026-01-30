@@ -9,19 +9,13 @@
 from django.contrib import admin
 from simplepro.admin import BaseAdmin, FieldOptions
 from ..models import VPNDevice, VPNService, VPNUser
-from .net import IPAddressInlineAdmin
+from .net import IPAddressInlineAdmin, NetDeviceAdmin
 
 
 @admin.register(VPNDevice)
-class VPNDeviceAdmin(BaseAdmin):
-    list_display = ['code', 'webControlAddress', 'remark', 'hoster', 'updatedAt', 'id']
+class VPNDeviceAdmin(NetDeviceAdmin):
+    list_display = ['code', 'webControlAddress','webControlUsername','webControlPassword', 'remark', 'hoster', 'updatedAt', 'id']
     inlines = [IPAddressInlineAdmin]
-
-    def formatter(self, obj, field_name, value):
-        if field_name == "webControlAddress":
-            if value:
-                return f"""<a href="{value}" target="_blank">点击跳转</a>"""
-        return value
 
     fields_options = {
         'id': FieldOptions.UUID,
