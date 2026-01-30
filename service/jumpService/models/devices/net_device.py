@@ -14,7 +14,14 @@ from .device import Device
 
 
 class NetDevice(Device):
+    """
+    默认当所有的网络设备基本上都是单用户
+    """
     mac = models.CharField(max_length=17, verbose_name="MAC地址", blank=True, null=True)
+    webControlAddress = fields.CharField(slot_text="URL", slot="prepend", max_length=255, verbose_name="WEB管理页面访问地址",
+                                    style="width:600px;",blank=True, null=True)
+    webControlUsername = fields.CharField(max_length=32,verbose_name="管理员用户名", blank=True, null=True)
+    webControlPassword = fields.PasswordInputField(max_length=32, verbose_name="管理页密码", blank=True, null=True)
 
     class Meta:
         verbose_name = "网络设备"

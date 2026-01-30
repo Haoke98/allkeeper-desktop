@@ -16,16 +16,17 @@ from ..models import Router
 @admin.register(Router)
 class RouterAdmin(BaseAdmin):
     list_display = ['code',
-                    'adminAddress', 'adminPassword', 'remark', 'bios', 'hoster',
+                    'webControlAddress', 'webControlPassword', 'remark', 'bios', 'hoster',
                     "updatedAt", "createdAt", "deletedAt", 'id']
+    exclude = ['webControlUsername']
     inlines = [IPAddressInlineAdmin]
 
     def formatter(self, obj, field_name, value):
         # 这里可以对value的值进行判断，比如日期格式化等
-        if field_name == "adminAddress":
+        if field_name == "webControlAddress":
             if value:
                 return f"""<a href="{value}" target="_blank">点击跳转</a>"""
-        if field_name == "adminPassword":
+        if field_name == "webControlPassword":
             if value:
                 return BaseAdmin.password(value)
         return value
@@ -61,11 +62,7 @@ class RouterAdmin(BaseAdmin):
             'min_width': '160px',
             'align': 'center'
         },
-        'adminPassword': {
-            'min_width': '180px',
-            'align': 'center'
-        },
-        'rootPassword': {
+        'webControlPassword': {
             'min_width': '180px',
             'align': 'center'
         },
@@ -85,7 +82,7 @@ class RouterAdmin(BaseAdmin):
             'min_width': '180px',
             'align': 'left'
         },
-        'adminAddress': {
+        'webControlAddress': {
             'min_width': '200px',
             'align': 'left'
         },
