@@ -8,5 +8,6 @@
 ======================================="""
 from .server import ServerNew, ServerCabinet, ServerRoom, ServerStatus, CPU
 from .router import Router
+from .vpn import VPNDevice
 from .device import Device, DeviceStatus
 from .net_device import NetDevice, Port

@@ -11,4 +11,5 @@ from .db import DbService, DbServiceUser
 from .minio import MinIO
 from .service import Service, ServiceUser, ServiceType
 from .ssh import SystemUser
+from .vpn import VPNService, VPNUser
 from .service_url import ServiceURL

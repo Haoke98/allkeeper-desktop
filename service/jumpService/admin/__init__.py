@@ -17,6 +17,7 @@ if not any(arg in sys.argv for arg in ['makemigrations', 'migrate', 'inspectdb']
     from .minio import MinIOAdmin
     from .net import NetWorkAdmin, NetDeviceAdmin, IPAddressAdmin
     from .router import RouterAdmin
+    from .vpn import VPNDeviceAdmin, VPNServiceAdmin, VPNUserAdmin
     from .server import ServerAdmin
     from .service import ServiceAdmin, ServiceUserAdmin, ServiceTypeAdmin
     from .ssh import SystemUserAdmin
