@@ -9,13 +9,20 @@ A desktop version for the project allkeeper(https://github.com/Haoke98/Allkeeper
 ![](assets/截屏2024-08-02%2017.08.14.png)
 
 ## 功能 & Develop Plan & TODO
-* [ ] 服务器
+* [X] 服务器
+  * [X] 操作系统
+    * [X] 登录凭证的存储
+      * [X] 账号密码的存储
+      * [ ] 密钥的存储  
   * [X] 远程控制
-    * [x] 已经实现了与外部 SSH 客户端联动 : [electerm](https://github.com/electerm/electerm.git)
-      * [x] 支持lrzsz
-    * [X] 实现与Microsoft Remote Desktop联动
-      * [X] 实现用 rdp 文件来传递连接信息 
-      * [X] 实现用 ms-rd://协议来唤醒
+    * [x] 已经实现了与外部 SSH 客户端联动:
+      * [X] [electerm](https://github.com/electerm/electerm.git)
+        * [X] 实现基于密码的快速登录
+        * [ ] 实现基于密钥的快速登录
+    * [X] 实现与外部RPD客户端的联动：
+      * [X] Microsoft Remote Desktop联动
+        * [X] 实现用 rdp 文件来传递连接信息 
+        * [X] 实现用 ms-rd://协议来唤醒
 * [ ] 网络
   * [ ] 内网穿透
     * [ ] 打通与内网穿透工具:Lanproxy 之间的联动
