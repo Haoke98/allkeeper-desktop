@@ -7,7 +7,6 @@ class BaseAccountAdmin(BaseAdmin):
     search_fields = ['group', 'username', 'pwd', 'remark', 'info']
     list_filter = ['group']
     list_select_related = ['group', 'wechat']
-    autocomplete_fields = ['group']
     list_per_page = 8
     actions = []
 
@@ -16,9 +15,13 @@ class BaseAccountAdmin(BaseAdmin):
         if field_name == "username":
             if value:
                 return BaseAdmin.username(obj.username)
-        if field_name == 'pwd':
-            if value:
-                return BaseAdmin.password(obj.pwd)
+        if field_name in ["pwd", "password"]:
+            if hasattr(obj,"pwd"):
+                if value:
+                    return BaseAdmin.password(obj.pwd)
+            elif hasattr(obj,"password"):
+                if value:
+                    return BaseAdmin.password(obj.password)
         return value
 
     fields_options = {
