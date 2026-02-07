@@ -38,7 +38,7 @@ class PortMap(BaseModel):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['left', 'right'], name='unique_p2p'),
+            models.UniqueConstraint(fields=['left', 'right','leftPort','rightPort'], name='unique_p2p'),
             models.UniqueConstraint(fields=['left', 'leftPort'], name='unique_left_port'),
             models.UniqueConstraint(fields=['right', 'rightPort'], name='unique_right_port'),
         ]
