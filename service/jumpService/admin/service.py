@@ -272,14 +272,44 @@ class ServiceAdmin(AjaxAdmin):
                     'deletedAt']
     search_fields = ['system', 'port', 'remark']
     list_filter = ['_type', 'system__image', 'system__server']
-    list_filter_multiples = ('_type',)
+    list_filter_multiples = ('_type','system__server',)
     actions = ['migrate', 'test_action', ]
     ordering = ('-updatedAt', '-createdAt',)
     inlines = [ServiceURLInlineAdmin, ServiceUserInlineAdmin]
 
     def _url(self, obj):
-        res = ""
         _full_urls  = {}
+        ips = obj.system.server.ips.all()
+        for ip_port in ips:
+            if ip_port.net is not None:
+                if ip_port.net.is_global():
+                    prefix = "公网"
+                else:
+                    prefix = "内网"
+
+        # FIXME:影响列表页的渲染, 增加延迟, 需要改成固定, 让用户在单个item的详情页里进行渲染, 在详情页中选入口/切换入口
+        # TODO: 实现通过 lanproxy 的 API 实时创建端口映射关系.
+        #  可以先查看有没有和当前服务器处在同一个网段的 lanproxy客户端, 也就是有没有可用的channels
+        conn_port = obj.dashboardPort
+        port_maps = obj.system.server.right_ports.all()
+        host_port_map = {}
+        for i, ip_port in enumerate(ips):
+            host_port_map[str(ip_port.ip)] = conn_port
+        for i, port_map in enumerate(port_maps):
+            if port_map.rightPort == conn_port:
+                # print(" " * 10, "|", "-" * 10, f"{i}.", port_map)
+                _ips = port_map.left.ips.all()
+                for ip in _ips:
+                    host_port_map[str(ip.ip)] = port_map.leftPort
+        for i, (host, port) in enumerate(host_port_map.items()):
+            schema = "http"
+            if obj.sslOn:
+                schema = "https"
+            _url = f"{schema}://{host}:{port}"
+            if obj.dashboardPath:
+                _url = f"{_url}/{obj.dashboardPath}"
+            _full_urls[_url] = f"{host}:{port}"
+
         for url in obj.urls.all():
             _urls = url.get_full_url()
             for net_work_remark,_url in _urls.items():
@@ -287,13 +317,11 @@ class ServiceAdmin(AjaxAdmin):
                     verbose_name = str(url.name)+f"({net_work_remark})"
                 else:
                     verbose_name = net_work_remark
-                _full_urls[verbose_name] = _url
-        print(obj.id)
-        for name,full_url in _full_urls.items():
-            print("\t",name, full_url)
-            res += f"""<a target="_blank" style="margin-right:10px;" href="{full_url}" >{name or full_url}</a>"""
-            print("\t\t",res)
-        return res
+                _full_urls[_url] = verbose_name
+        a_tags = []
+        for full_url,name in _full_urls.items():
+            a_tags.append( f"""<a target="_blank" style="margin-right:10px;" href="{full_url}" >{name or full_url}</a>""")
+        return "<br>".join(a_tags)
 
     _url.short_description = "访问地址"
 
