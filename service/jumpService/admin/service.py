@@ -279,36 +279,37 @@ class ServiceAdmin(AjaxAdmin):
 
     def _url(self, obj):
         _full_urls  = {}
-        ips = obj.system.server.ips.all()
-        for ip_port in ips:
-            if ip_port.net is not None:
-                if ip_port.net.is_global():
-                    prefix = "公网"
-                else:
-                    prefix = "内网"
+        if obj.system:
+            ips = obj.system.server.ips.all()
+            for ip_port in ips:
+                if ip_port.net is not None:
+                    if ip_port.net.is_global():
+                        prefix = "公网"
+                    else:
+                        prefix = "内网"
 
-        # FIXME:影响列表页的渲染, 增加延迟, 需要改成固定, 让用户在单个item的详情页里进行渲染, 在详情页中选入口/切换入口
-        # TODO: 实现通过 lanproxy 的 API 实时创建端口映射关系.
-        #  可以先查看有没有和当前服务器处在同一个网段的 lanproxy客户端, 也就是有没有可用的channels
-        conn_port = obj.dashboardPort
-        port_maps = obj.system.server.right_ports.all()
-        host_port_map = {}
-        for i, ip_port in enumerate(ips):
-            host_port_map[str(ip_port.ip)] = conn_port
-        for i, port_map in enumerate(port_maps):
-            if port_map.rightPort == conn_port:
-                # print(" " * 10, "|", "-" * 10, f"{i}.", port_map)
-                _ips = port_map.left.ips.all()
-                for ip in _ips:
-                    host_port_map[str(ip.ip)] = port_map.leftPort
-        for i, (host, port) in enumerate(host_port_map.items()):
-            schema = "http"
-            if obj.sslOn:
-                schema = "https"
-            _url = f"{schema}://{host}:{port}"
-            if obj.dashboardPath:
-                _url = f"{_url}/{obj.dashboardPath}"
-            _full_urls[_url] = f"{host}:{port}"
+            # FIXME:影响列表页的渲染, 增加延迟, 需要改成固定, 让用户在单个item的详情页里进行渲染, 在详情页中选入口/切换入口
+            # TODO: 实现通过 lanproxy 的 API 实时创建端口映射关系.
+            #  可以先查看有没有和当前服务器处在同一个网段的 lanproxy客户端, 也就是有没有可用的channels
+            conn_port = obj.dashboardPort
+            port_maps = obj.system.server.right_ports.all()
+            host_port_map = {}
+            for i, ip_port in enumerate(ips):
+                host_port_map[str(ip_port.ip)] = conn_port
+            for i, port_map in enumerate(port_maps):
+                if port_map.rightPort == conn_port:
+                    # print(" " * 10, "|", "-" * 10, f"{i}.", port_map)
+                    _ips = port_map.left.ips.all()
+                    for ip in _ips:
+                        host_port_map[str(ip.ip)] = port_map.leftPort
+            for i, (host, port) in enumerate(host_port_map.items()):
+                schema = "http"
+                if obj.sslOn:
+                    schema = "https"
+                _url = f"{schema}://{host}:{port}"
+                if obj.dashboardPath:
+                    _url = f"{_url}/{obj.dashboardPath}"
+                _full_urls[_url] = f"{host}:{port}"
 
         for url in obj.urls.all():
             _urls = url.get_full_url()
