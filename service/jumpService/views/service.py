@@ -11,9 +11,24 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.html import escapejs
 import json
-import webbrowser
-import subprocess
 import sys
+from ..utils.browser_control import get_browser_windows, open_url, PermissionError, BrowserControlError
+
+@csrf_exempt
+def get_windows_api(request):
+    browser = request.GET.get('browser')
+    if not browser:
+        return JsonResponse({'status': 'error', 'message': 'Browser parameter is required'}, status=400)
+    
+    try:
+        windows = get_browser_windows(browser)
+        return JsonResponse({'status': 'success', 'windows': windows})
+    except PermissionError as e:
+        return JsonResponse({'status': 'error', 'code': 'PERMISSION_DENIED', 'message': str(e)}, status=403)
+    except BrowserControlError as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
 @csrf_exempt
 def open_browser(request):
@@ -22,41 +37,47 @@ def open_browser(request):
             data = json.loads(request.body)
             url = data.get('url')
             browser_name = data.get('browser', 'default')
-            new_window = data.get('new_window', False)
+            # new_window is now part of window_id logic ('new' or specific id)
+            # but we keep backward compatibility if needed, though frontend will change
+            window_id = data.get('window_id')
+            
+            # Legacy support: if new_window is True and window_id is not set
+            if not window_id and data.get('new_window'):
+                window_id = 'new'
 
             if not url:
                 return JsonResponse({'status': 'error', 'message': 'URL is required'}, status=400)
 
-            print(f"Opening {url} in {browser_name} (new_window={new_window})")
+            print(f"Opening {url} in {browser_name} (window_id={window_id})")
 
             # Platform specific logic (macOS)
             if sys.platform == 'darwin':
-                cmd = ['open']
-                if new_window:
-                    cmd.append('-n')
+                if browser_name == 'default':
+                    # Default browser logic
+                    import webbrowser
+                    if window_id == 'new':
+                        webbrowser.open_new(url)
+                    else:
+                        webbrowser.open(url)
+                    return JsonResponse({'status': 'success', 'message': 'Browser opened (Default)'})
                 
-                if browser_name == 'chrome':
-                    cmd.extend(['-a', 'Google Chrome'])
-                elif browser_name == 'safari':
-                    cmd.extend(['-a', 'Safari'])
-                elif browser_name == 'firefox':
-                    cmd.extend(['-a', 'Firefox'])
-                elif browser_name == 'edge':
-                    cmd.extend(['-a', 'Microsoft Edge'])
-                
-                cmd.append(url)
-                subprocess.Popen(cmd)
+                success, msg = open_url(browser_name, url, window_id)
+                if success:
+                    return JsonResponse({'status': 'success', 'message': msg})
+                else:
+                    return JsonResponse({'status': 'error', 'message': msg}, status=500)
             else:
-                # Fallback for other platforms (Windows/Linux)
-                # For Windows, 'start' command or webbrowser module
-                # Here we use webbrowser as a basic fallback if not macOS
-                if new_window:
+                # Fallback for non-macOS (only support default/new window basic)
+                import webbrowser
+                if window_id == 'new':
                      webbrowser.open_new(url)
                 else:
                      webbrowser.open(url)
 
             return JsonResponse({'status': 'success', 'message': 'Browser opened'})
         except Exception as e:
+             import traceback
+             traceback.print_exc()
              return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
     return JsonResponse({'status': 'error', 'message': 'Method not allowed'}, status=405)
 

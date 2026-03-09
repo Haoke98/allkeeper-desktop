@@ -26,7 +26,7 @@
             margin: auto;
             padding: 20px;
             border: 1px solid #888;
-            width: 350px;
+            width: 400px;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             font-family: Arial, sans-serif;
@@ -42,13 +42,16 @@
                     <option value="safari">Safari</option>
                     <option value="firefox">Firefox</option>
                     <option value="edge">Microsoft Edge</option>
+                    <option value="opera">Opera</option>
+                    <option value="brave">Brave</option>
                 </select>
             </div>
-            <div style="margin-bottom: 20px;">
-                <label style="display: flex; align-items: center; cursor: pointer;">
-                    <input type="checkbox" id="new-window-check" style="margin-right: 8px;"> 
-                    在新窗口打开 (New Window)
-                </label>
+            <div style="margin-bottom: 20px;" id="window-select-container">
+                <label style="display:block; margin-bottom:5px; font-weight: bold;">目标窗口:</label>
+                <select id="window-select" style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ddd;">
+                    <option value="new">新窗口 (New Window)</option>
+                </select>
+                <div id="window-loading" style="display:none; color: #666; font-size: 12px; margin-top: 4px;">正在获取窗口列表...</div>
             </div>
             <div style="text-align: right; border-top: 1px solid #eee; padding-top: 15px;">
                 <button id="cancel-btn" style="margin-right: 10px; padding: 6px 12px; cursor: pointer; background: #fff; border: 1px solid #ddd; border-radius: 4px;">取消</button>
@@ -67,19 +70,77 @@
         document.getElementById('cancel-btn').addEventListener('click', () => {
             modal.style.display = 'none';
         });
+        
+        // Browser change event
+        document.getElementById('browser-select').addEventListener('change', function() {
+            const browser = this.value;
+            fetchWindows(browser);
+        });
 
         return modal;
+    }
+
+    function fetchWindows(browser) {
+        const windowSelect = document.getElementById('window-select');
+        const loadingDiv = document.getElementById('window-loading');
+        
+        // Reset options
+        windowSelect.innerHTML = '<option value="new">新窗口 (New Window)</option>';
+        
+        if (browser === 'default' || browser === 'firefox') {
+            // Default browser or Firefox (no window list support) just shows "New Window" (or implicit default)
+            if (browser === 'default') {
+                 // For default, "new" means force new window, otherwise it's standard open
+                 windowSelect.innerHTML = '<option value="">当前/默认行为 (Default)</option><option value="new">新窗口 (New Window)</option>';
+            }
+            return;
+        }
+
+        loadingDiv.style.display = 'block';
+        windowSelect.disabled = true;
+
+        fetch(`/jump_service/service/browser/windows?browser=${browser}`)
+            .then(response => response.json())
+            .then(data => {
+                loadingDiv.style.display = 'none';
+                windowSelect.disabled = false;
+                
+                if (data.status === 'success' && data.windows) {
+                    data.windows.forEach(win => {
+                        const option = document.createElement('option');
+                        option.value = win.id;
+                        // Limit title length
+                        let title = win.title || 'Untitled';
+                        if (title.length > 50) title = title.substring(0, 47) + '...';
+                        option.text = `窗口: ${title}`;
+                        windowSelect.appendChild(option);
+                    });
+                } else if (data.status === 'error' && data.code === 'PERMISSION_DENIED') {
+                    const option = document.createElement('option');
+                    option.disabled = true;
+                    option.text = '需要自动化权限 (Need Permission)';
+                    windowSelect.appendChild(option);
+                    alert("需要授予应用自动化控制浏览器的权限，请在系统偏好设置 > 安全性与隐私 > 自动化 中勾选。");
+                }
+            })
+            .catch(err => {
+                console.error('Failed to fetch windows', err);
+                loadingDiv.style.display = 'none';
+                loadingDiv.innerText = '获取失败';
+                loadingDiv.style.display = 'block';
+                windowSelect.disabled = false;
+            });
     }
 
     window.openBrowserSelector = function(url) {
         const modal = createModal();
         const browserSelect = document.getElementById('browser-select');
-        const newWindowCheck = document.getElementById('new-window-check');
+        const windowSelect = document.getElementById('window-select');
         const openBtn = document.getElementById('open-btn');
 
         // Reset state
         browserSelect.value = 'default';
-        newWindowCheck.checked = false;
+        fetchWindows('default'); // Reset window list
         
         // Remove old listener to avoid duplicates
         const newBtn = openBtn.cloneNode(true);
@@ -87,7 +148,7 @@
 
         newBtn.addEventListener('click', () => {
             const browser = browserSelect.value;
-            const newWindow = newWindowCheck.checked;
+            const windowId = windowSelect.value;
             const urlToOpen = url;
 
             // Show loading state
@@ -104,7 +165,7 @@
                 body: JSON.stringify({
                     url: urlToOpen,
                     browser: browser,
-                    new_window: newWindow
+                    window_id: windowId
                 })
             })
             .then(response => response.json())
@@ -113,7 +174,6 @@
                 newBtn.innerText = '打开';
                 if (data.status === 'success') {
                     modal.style.display = 'none';
-                    // Optional: Show success toast
                 } else {
                     alert('打开失败: ' + data.message);
                 }

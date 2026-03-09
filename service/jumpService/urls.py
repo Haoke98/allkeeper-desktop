@@ -16,6 +16,7 @@ urlpatterns = [
                   path('server/collect', collect),
                   path('service/users', service.get_users),
                   path('service/open', service.open_browser),
+                  path('service/browser/windows', service.get_windows_api),
                   path('net', network_topology),
                   path('op_sys/remote/control', open_remote_access),
                   path('op_sys/rdp/open', rdp_open)
