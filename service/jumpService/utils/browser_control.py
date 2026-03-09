@@ -14,11 +14,42 @@ BROWSER_MAP = {
     'brave': 'Brave Browser'
 }
 
+BROWSER_BUNDLE_IDS = {
+    'chrome': 'com.google.Chrome',
+    'edge': 'com.microsoft.edgemac',
+    'safari': 'com.apple.Safari',
+    'opera': 'com.operasoftware.Opera',
+    'firefox': 'org.mozilla.firefox',
+    'brave': 'com.brave.Browser'
+}
+
 class BrowserControlError(Exception):
     pass
 
 class PermissionError(BrowserControlError):
     pass
+
+def is_browser_installed(browser_key):
+    bundle_id = BROWSER_BUNDLE_IDS.get(browser_key)
+    if not bundle_id:
+        return False
+    
+    # Safari is always installed on macOS
+    if browser_key == 'safari':
+        return True
+
+    try:
+        # mdfind is faster than checking paths recursively, but checking specific paths is fastest
+        # However, apps can be anywhere. mdfind with bundle ID is robust.
+        result = subprocess.run(
+            ['mdfind', f"kMDItemCFBundleIdentifier == '{bundle_id}'"],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        return bool(result.stdout.strip())
+    except subprocess.SubprocessError:
+        return False
 
 def _run_applescript(script):
     try:

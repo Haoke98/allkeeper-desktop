@@ -132,11 +132,63 @@
             });
     }
 
+    function fetchInstalledBrowsers() {
+        const browserSelect = document.getElementById('browser-select');
+        // Keep default option if not already cleared
+        let defaultOption = browserSelect.querySelector('option[value="default"]');
+        if (!defaultOption) {
+             defaultOption = document.createElement('option');
+             defaultOption.value = 'default';
+             defaultOption.text = '默认浏览器 (Default)';
+        }
+        
+        fetch('/jump_service/service/browser/list')
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success' && data.browsers) {
+                    // Rebuild options based on install status
+                    browserSelect.innerHTML = '';
+                    browserSelect.appendChild(defaultOption);
+                    
+                    const browsers = [
+                        { key: 'chrome', label: 'Google Chrome' },
+                        { key: 'safari', label: 'Safari' },
+                        { key: 'firefox', label: 'Firefox' },
+                        { key: 'edge', label: 'Microsoft Edge' },
+                        { key: 'opera', label: 'Opera' },
+                        { key: 'brave', label: 'Brave' }
+                    ];
+                    
+                    browsers.forEach(b => {
+                        // Check if browser exists in the returned list
+                        if (data.browsers.hasOwnProperty(b.key)) {
+                            const isInstalled = data.browsers[b.key];
+                            const option = document.createElement('option');
+                            option.value = b.key;
+                            option.text = isInstalled ? b.label : `${b.label} (未安装/Not Installed)`;
+                            if (!isInstalled) {
+                                option.disabled = true;
+                                option.style.color = '#999';
+                            }
+                            browserSelect.appendChild(option);
+                        }
+                    });
+                    
+                    // Restore selection if possible, else default
+                    browserSelect.value = 'default';
+                }
+            })
+            .catch(err => console.error('Failed to fetch installed browsers', err));
+    }
+
     window.openBrowserSelector = function(url) {
         const modal = createModal();
         const browserSelect = document.getElementById('browser-select');
         const windowSelect = document.getElementById('window-select');
         const openBtn = document.getElementById('open-btn');
+
+        // Fetch installed browsers status
+        fetchInstalledBrowsers();
 
         // Reset state
         browserSelect.value = 'default';

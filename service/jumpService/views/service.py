@@ -12,7 +12,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.html import escapejs
 import json
 import sys
-from ..utils.browser_control import get_browser_windows, open_url, PermissionError, BrowserControlError
+from ..utils.browser_control import get_browser_windows, open_url, PermissionError, BrowserControlError, is_browser_installed
 
 @csrf_exempt
 def get_windows_api(request):
@@ -20,6 +20,10 @@ def get_windows_api(request):
     if not browser:
         return JsonResponse({'status': 'error', 'message': 'Browser parameter is required'}, status=400)
     
+    # Check if browser is installed
+    if browser != 'default' and not is_browser_installed(browser):
+        return JsonResponse({'status': 'error', 'code': 'NOT_INSTALLED', 'message': 'Browser not installed'}, status=404)
+
     try:
         windows = get_browser_windows(browser)
         return JsonResponse({'status': 'success', 'windows': windows})
@@ -29,6 +33,19 @@ def get_windows_api(request):
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+@csrf_exempt
+def get_installed_browsers_api(request):
+    browsers = {
+        'default': True,
+        'chrome': is_browser_installed('chrome'),
+        'safari': True, # Always true on macOS
+        'edge': is_browser_installed('edge'),
+        'firefox': is_browser_installed('firefox'),
+        'opera': is_browser_installed('opera'),
+        'brave': is_browser_installed('brave')
+    }
+    return JsonResponse({'status': 'success', 'browsers': browsers})
 
 @csrf_exempt
 def open_browser(request):
