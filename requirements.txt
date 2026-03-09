@@ -1,5 +1,6 @@
 Django>=4.0.0,<5.0.0
-pywebview>=5.0.0
+pywebview>=6.1.0
+webssh>=1.6.0
 click
 DjangoAsyncAdmin>=6.13.0
 djangorestframework==3.14.0
@@ -23,5 +24,3 @@ moviepy==1.0.3
 flask-socketio
 pyinstaller==6.10.0
 graphviz
-django-sslserverdjango-sslserver
-cryptography

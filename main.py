@@ -167,7 +167,23 @@ def on_window_start(window: webview.Window, dev_mode: bool, lan_access: bool, po
 @click.option('--dev', flag_value=True, default=False, help='Run the service in development mode')
 @click.option('--lan', flag_value=True, default=False, help='允许局域网访问')
 def main(port, dev, lan):
-    window = webview.create_window('All-Keeper', "http://localhost:9080", width=1400, height=1000)
+    # PyWebView 6.x Optimizations
+    webview.settings['ALLOW_DOWNLOADS'] = True # 允许文件下载
+    webview.settings['ALLOW_FILE_URLS'] = True # 允许加载本地文件 URL
+    webview.settings['OPEN_EXTERNAL_LINKS_IN_BROWSER'] = True # 提升用户体验，外部链接直接在默认浏览器打开
+    webview.settings['OPEN_DEVTOOLS_IN_DEBUG'] = False # 调试模式下自动打开开发者工具
+    
+    # Enable High DPI support usually handled automatically, but vibrancy adds nice touch on macOS
+    window = webview.create_window(
+        'All-Keeper', 
+        "http://localhost:9080", 
+        width=1400, 
+        height=1000,
+        vibrancy=True, # macOS visual effect
+        zoomable=True, # Allow zooming
+        text_select=True # Allow text selection
+    )
+    
     window.events.closed += on_closed
     window.events.closing += on_closing
     window.events.shown += on_shown
@@ -176,7 +192,11 @@ def main(port, dev, lan):
     window.events.restored += on_restored
     window.events.resized += on_resized
     window.events.moved += on_moved
+    
+    # Note: ssl=True in start() enables SSL for the internal server (if used). 
+    # Since we use external Django server, this mainly affects local file serving if any.
     webview.start(on_window_start, args=(window, dev, lan, port), ssl=True, debug=dev)
+    
     print("Command line arguments (after execute):", sys.argv)
     if dev:
         print("AllKeeperDesktop is now running on development mode !")
