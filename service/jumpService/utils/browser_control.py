@@ -193,6 +193,13 @@ def open_url(browser_key, url, window_id=None):
                  return True, "Opened in new window (Firefox)"
              except Exception as e:
                  return False, str(e)
+        elif browser_key == 'opera':
+             # Opera has issues with "make new window" AppleScript, use command line
+             try:
+                 subprocess.Popen(['open', '-n', '-a', app_name, '--args', '--new-window', url])
+                 return True, "Opened in new window (Opera)"
+             except Exception as e:
+                 return False, str(e)
         else: # Chromium based
             script = f'''
             tell application "{app_name}"
