@@ -71,12 +71,14 @@ def navigate2after_wait(window: webview.Window, url):
     while True:
         try:
             check_url = url
-            response = requests.get(check_url, proxies={"http": "", "https": ""})
+            response = requests.get(check_url, proxies={"http": "", "https": ""}, verify=False)
             log = "Checking status of Django server...({}) : {}".format(check_url, response.status_code)
             logs += log + "\n"
             print(log)
             if response.status_code == 200:
                 break
+        except requests.exceptions.SSLError as e:
+            pass
         except requests.exceptions.ConnectionError as e:
             log = "Checking status of Django server...({}) : {}".format(url, e)
             logs += log + "\n"
@@ -139,8 +141,8 @@ def on_window_start(window: webview.Window, dev_mode: bool, lan_access: bool, po
     if dev_mode:
         manage_script = os.path.join(BASE_DIR, 'service', 'manage.py')
         start_service(namespace="Django",
-                      command=[f'python',
-                               manage_script, 'runserver',
+                      command=[sys.executable,
+                               manage_script, 'run_secure',
                                f'{host}:{port}'])
     else:
         if os.name == 'nt':
@@ -149,14 +151,14 @@ def on_window_start(window: webview.Window, dev_mode: bool, lan_access: bool, po
             service_dir = os.path.join(BASE_DIR, "services")
             start_service(namespace="Django",
                           command=[os.path.join(service_dir, 'allkeeper-django.exe'),
-                                   'runserver', f'{host}:{port}', '--noreload'])
+                                   'run_secure', f'{host}:{port}', '--noreload'])
         else:
             print("当前系统不是Windows")
             start_service(namespace="Django",
-                          command=['./services/allkeeper-django', 'runserver',
+                          command=['./services/allkeeper-django', 'run_secure',
                                    f'{host}:{port}', '--noreload'])
 
-    url = f'http://127.0.0.1:{port}/admin/'
+    url = f'https://127.0.0.1:{port}/admin/'
     navigate2after_wait(window, url)
 
 

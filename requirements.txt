@@ -23,3 +23,5 @@ moviepy==1.0.3
 flask-socketio
 pyinstaller==6.10.0
 graphviz
+django-sslserverdjango-sslserver
+cryptography
