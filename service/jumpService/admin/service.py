@@ -321,8 +321,11 @@ class ServiceAdmin(AjaxAdmin):
                 _full_urls[_url] = verbose_name
         a_tags = []
         for full_url,name in _full_urls.items():
-            a_tags.append( f"""<a target="_blank" style="margin-right:10px;" href="{full_url}" >{name or full_url}</a>""")
+            a_tags.append( f"""<a class="browser-selector" data-url="{full_url}" style="margin-right:10px; cursor:pointer; color:#409EFF;">{name or full_url}</a>""")
         return "<br>".join(a_tags)
+
+    class Media:
+        js = ('js/browser_selector.js',)
 
     _url.short_description = "访问地址"
 

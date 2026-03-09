@@ -7,10 +7,58 @@
 @disc:
 ======================================="""
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from django.utils.html import escapejs
+import json
+import webbrowser
+import subprocess
+import sys
 
-from ..models import ServiceUser
+@csrf_exempt
+def open_browser(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            url = data.get('url')
+            browser_name = data.get('browser', 'default')
+            new_window = data.get('new_window', False)
+
+            if not url:
+                return JsonResponse({'status': 'error', 'message': 'URL is required'}, status=400)
+
+            print(f"Opening {url} in {browser_name} (new_window={new_window})")
+
+            # Platform specific logic (macOS)
+            if sys.platform == 'darwin':
+                cmd = ['open']
+                if new_window:
+                    cmd.append('-n')
+                
+                if browser_name == 'chrome':
+                    cmd.extend(['-a', 'Google Chrome'])
+                elif browser_name == 'safari':
+                    cmd.extend(['-a', 'Safari'])
+                elif browser_name == 'firefox':
+                    cmd.extend(['-a', 'Firefox'])
+                elif browser_name == 'edge':
+                    cmd.extend(['-a', 'Microsoft Edge'])
+                
+                cmd.append(url)
+                subprocess.Popen(cmd)
+            else:
+                # Fallback for other platforms (Windows/Linux)
+                # For Windows, 'start' command or webbrowser module
+                # Here we use webbrowser as a basic fallback if not macOS
+                if new_window:
+                     webbrowser.open_new(url)
+                else:
+                     webbrowser.open(url)
+
+            return JsonResponse({'status': 'success', 'message': 'Browser opened'})
+        except Exception as e:
+             return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+    return JsonResponse({'status': 'error', 'message': 'Method not allowed'}, status=405)
 
 
 @login_required
