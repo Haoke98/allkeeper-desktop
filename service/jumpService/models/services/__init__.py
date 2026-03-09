@@ -9,7 +9,7 @@
 from .bt import BT
 from .db import DbService, DbServiceUser
 from .minio import MinIO
-from .service import Service, ServiceUser, ServiceType
-from .ssh import SystemUser
+from .service import Service, ServiceType, ServiceUser, AbstractBaseServiceModel, AbstractBaseServiceUserModel
 from .vpn import VPNService, VPNUser
 from .service_url import ServiceURL
+from .ssh import SystemUser

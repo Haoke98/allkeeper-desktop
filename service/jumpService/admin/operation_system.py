@@ -13,7 +13,7 @@ from django.forms import ModelForm
 from simplepro.admin import FieldOptions, BaseAdmin
 from simplepro.dialog import ModalDialog, MultipleCellDialog
 
-from ..models import OperationSystem, OperationSystemImage, IPAddress, SystemUser
+from ..models import OperationSystem, OperationSystemImage, IPAddress
 
 
 @admin.register(OperationSystemImage)
@@ -82,20 +82,6 @@ class OperationSystemImageAdmin(admin.ModelAdmin):
     }
 
 
-class UserForm(ModelForm):
-    class Meta:
-        model = SystemUser
-        # fields = ['username', 'password', 'owner', 'hasRootPriority', 'group', 'remark']
-        fields = ['username', 'password', 'owner', 'remark']
-
-
-class UserInlineAdmin(admin.TabularInline):
-    model = SystemUser
-    form = UserForm
-    min_num = 0
-    extra = 0
-
-
 @admin.register(OperationSystem)
 class OperationSystemAdmin(BaseAdmin):
     list_display = ['id', 'image', 'server', 'open_ssh', 'remoteAccessPort',
@@ -104,7 +90,7 @@ class OperationSystemAdmin(BaseAdmin):
     list_filter_multiples = ('server','image','server__remark')
     search_fields = ['server__code', 'server__remark', 'server__ips__ip']
     ordering = ('-updatedAt',)
-    # inlines = [UserInlineAdmin]
+    # inlines = []
 
     def open_ssh(self, obj: OperationSystem):
         modals = []

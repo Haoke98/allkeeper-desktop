@@ -12,15 +12,15 @@ import sys
 if not any(arg in sys.argv for arg in ['makemigrations', 'migrate', 'inspectdb']):
     from .bt import BtAdmin
     from .dbService import DbServiceAdmin
-    from .dbServiceUser import DbServiceUserAdmin
     from .device import DeviceAdmin
     from .minio import MinIOAdmin
     from .net import NetWorkAdmin, NetDeviceAdmin, IPAddressAdmin
     from .router import RouterAdmin
-    from .vpn import VPNDeviceAdmin, VPNServiceAdmin, VPNUserAdmin
+    from .vpn import VPNDeviceAdmin, VPNServiceAdmin
     from .server import ServerAdmin
-    from .service import ServiceAdmin, ServiceUserAdmin, ServiceTypeAdmin
-    from .ssh import SystemUserAdmin
+    from .service import ServiceAdmin, ServiceTypeAdmin
     from .operation_system import OperationSystemAdmin
     from .channel import ChannelAdmin
     from .port import PortMapAdmin, PortAdmin
+
+from .user_system import UserSystemAdmin, UnifiedServiceUserAdmin

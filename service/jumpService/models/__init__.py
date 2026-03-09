@@ -5,3 +5,5 @@ from .services import *
 from .operation_system import OperationSystem, OperationSystemImage
 from .channel import Channel, PortMap
 from .services.service_url import Protocol
+
+from .user_system import UserSystem, UnifiedServiceUser

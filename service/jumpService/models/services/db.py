@@ -2,7 +2,6 @@ from django.db import models
 
 from .service import AbstractBaseServiceModel, AbstractBaseServiceUserModel
 
-
 class DbService(AbstractBaseServiceModel):
     pwd = models.CharField(verbose_name="root密码", max_length=48, null=True, blank=True)
     typeOpts = (
@@ -17,12 +16,12 @@ class DbService(AbstractBaseServiceModel):
         verbose_name_plural = f"所有{verbose_name}"
 
     def __str__(self):
-        ttype = ""
+        ttype_str = ""
         for a, b in self.typeOpts:
             if self.ttype == a:
-                ttype = b
-        return f"{b}({self.server}:{self.port}）"
-
+                ttype_str = b
+                break
+        return f"{ttype_str}({self.server}:{self.port}）"
 
 class DbServiceUser(AbstractBaseServiceUserModel):
     service = models.ForeignKey(to=DbService, on_delete=models.CASCADE, verbose_name="服务", null=True,
@@ -33,4 +32,7 @@ class DbServiceUser(AbstractBaseServiceUserModel):
         verbose_name_plural = f"所有{verbose_name}"
 
     def __str__(self):
-        return f"用户（{self.service.server.ip},{self.owner}）"
+        # Handle potential None for service or server if accessed during creation/deletion
+        if self.service and self.service.server:
+             return f"用户（{self.service.server.ip},{self.owner}）"
+        return f"用户（{self.username}）"

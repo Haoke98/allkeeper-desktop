@@ -56,6 +56,8 @@ class Service(BaseAccountModel):
     wafPort = models.PositiveIntegerField(verbose_name="WAF代理端口", null=True, blank=True, db_index=True)
 
     # TODO: 确定单用户服务和多用户服务之间的关系的处理, 要分开还是统一处理?
+    user_system = fields.ForeignKey(to='jumpService.UserSystem', on_delete=models.SET_NULL, verbose_name="用户体系",
+                                    null=True, blank=True)
 
     class Meta:
         abstract = False
@@ -99,6 +101,8 @@ class AbstractBaseServiceModel(BaseAccountModel):
                                blank=False, db_index=True, related_name="%(class)s_services")
     port = models.PositiveIntegerField(verbose_name="端口", default=8888, blank=False, db_index=True)
     path = models.TextField(verbose_name="路径", null=True, blank=True)
+    user_system = fields.ForeignKey(to='jumpService.UserSystem', on_delete=models.SET_NULL, verbose_name="用户体系",
+                                    null=True, blank=True)
 
     class Meta:
         abstract = True

@@ -10,7 +10,7 @@ from django.contrib import admin
 from simplepro.admin import BaseAdmin, FieldOptions
 
 from accountSystem.admin.base import BaseAccountAdmin
-from ..models import VPNDevice, VPNService, VPNUser
+from ..models import VPNDevice, VPNService
 from .net import IPAddressInlineAdmin, NetDeviceAdmin
 
 
@@ -28,14 +28,7 @@ class VPNDeviceAdmin(NetDeviceAdmin):
 
 
 @admin.register(VPNService)
-class VPNServiceAdmin(BaseAdmin):
-    list_display = ['vpn_type', 'server', 'port', 'protocol', 'subnet', 'public_host']
-    list_filter = ['vpn_type', 'protocol']
-    search_fields = ['server__code', 'server__remark', 'public_host']
-
-
-@admin.register(VPNUser)
-class VPNUserAdmin(BaseAccountAdmin):
-    list_display = ['id','service','username', 'password', 'owner', 'is_active', 'expired_at']
-    list_filter = ['is_active', 'service__vpn_type','service']
-    search_fields = ['username', 'owner', 'service__server__remark']
+class VPNServiceAdmin(BaseAccountAdmin):
+    list_display = ['id', 'server', 'port', 'vpn_type', 'protocol', 'subnet', 'public_host', 'updatedAt', 'createdAt']
+    search_fields = ['server__name', 'server__ip', 'public_host', 'remark']
+    list_filter = ['vpn_type', 'protocol', 'server']

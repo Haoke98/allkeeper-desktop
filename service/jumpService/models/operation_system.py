@@ -12,6 +12,7 @@ from simplepro.lib import pkHelper
 from simplepro.models import BaseModel
 
 from .devices import ServerNew
+from .user_system import UserSystem
 
 
 class OperationSystemImage(BaseModel):
@@ -75,6 +76,8 @@ class OperationSystem(BaseModel):
     server = fields.ForeignKey(to=ServerNew, on_delete=models.CASCADE, null=True, blank=False, verbose_name="服务器",
                                related_name="systems")
     remoteAccessPort = models.PositiveSmallIntegerField(verbose_name="远程控制端口", blank=True, null=True)
+    user_system = fields.ForeignKey(to='jumpService.UserSystem', on_delete=models.SET_NULL, verbose_name="用户体系",
+                                    null=True, blank=True)
 
     class Meta:
         verbose_name = "操作系统"

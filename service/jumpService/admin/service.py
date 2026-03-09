@@ -17,7 +17,7 @@ from simplepro.decorators import button
 from simplepro.dialog import ModalDialog
 from simpleui.admin import AjaxAdmin
 
-from ..models import Service, ServiceUser, ServiceType, ServerNew, OperationSystemImage,ServiceURL, Protocol
+from ..models import Service, ServiceType, ServerNew, OperationSystemImage,ServiceURL, Protocol
 from ..forms import ServiceURLForm
 
 
@@ -256,15 +256,6 @@ class ServiceURLAdmin(BaseAdmin):
         return form
 
 
-class ServiceUserInlineAdmin(admin.TabularInline):
-    model = ServiceUser
-    extra = 0
-    min_num = 0
-    fields = ['owner', 'username', 'password', 'hasRootPriority']
-    verbose_name = "服务用户"
-    verbose_name_plural = verbose_name
-
-
 @admin.register(Service)
 class ServiceAdmin(AjaxAdmin):
     list_display = ['id', '_type', 'system', 'port', '_url', '_user_management', 'remark', 'updatedAt',
@@ -275,7 +266,7 @@ class ServiceAdmin(AjaxAdmin):
     list_filter_multiples = ('_type','system__server',)
     actions = ['migrate', 'test_action', ]
     ordering = ('-updatedAt', '-createdAt',)
-    inlines = [ServiceURLInlineAdmin, ServiceUserInlineAdmin]
+    inlines = [ServiceURLInlineAdmin]
 
     def _url(self, obj):
         _full_urls  = {}
@@ -507,59 +498,3 @@ class ServiceAdmin(AjaxAdmin):
             'msg': f'迁移完成'
         }
 
-
-@admin.register(ServiceUser)
-class ServiceUserAdmin(BaseAdmin):
-    list_display = ['id', 'service', 'username', 'password', 'hasRootPriority', 'createdAt', 'updatedAt', 'deletedAt']
-    list_filter = ['service', 'service__system__server', 'service__system', 'service___type', 'hasRootPriority']
-    search_fields = ['username', 'password', 'service__system__server__remark']
-    ordering = ('-updatedAt',)
-
-    def formatter(self, obj, field_name, value):
-        # 这里可以对value的值进行判断，比如日期格式化等
-        if field_name == "ip":
-            if value:
-                return BaseAdmin.username(obj.ip)
-        if field_name == 'rootPassword':
-            if value:
-                return BaseAdmin.password(obj.rootPassword)
-        if field_name == "bios":
-            if value:
-                return BaseAdmin.password(obj.bios)
-        return value
-
-    fields_options = {
-        'id': FieldOptions.UUID,
-        'code': {
-            'fixed': 'left',
-            'min_width': '88px',
-            'align': 'center'
-        },
-        'createdAt': {
-            'min_width': '180px',
-            'align': 'left'
-        },
-        'updatedAt': {
-            'min_width': '180px',
-            'align': 'left'
-        },
-        'deletedAt': {
-            'min_width': '180px',
-            'align': 'left'
-        },
-        'username': {
-            'min_width': '200px',
-            'align': 'left'
-        },
-        'password': {
-            'min_width': '200px',
-            'align': 'left'
-        },
-        'service': {
-            'min_width': '300px',
-            'align': 'left',
-            "resizeable": True,
-            "show_overflow_tooltip": True
-
-        }
-    }

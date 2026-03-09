@@ -10,7 +10,6 @@ from django.db import models
 from simplepro.components import fields
 from .service import AbstractBaseServiceModel, AbstractBaseServiceUserModel
 
-
 class VPNService(AbstractBaseServiceModel):
     TYPE_CHOICES = (
         ('openvpn', 'OpenVPN'),
@@ -45,4 +44,7 @@ class VPNUser(AbstractBaseServiceUserModel):
         verbose_name_plural = verbose_name
 
     def __str__(self):
-        return f"VPN用户({self.username}@{self.service})"
+        # Handle potential None for service or server if accessed during creation/deletion
+        if self.service:
+             return f"VPN用户({self.username}@{self.service})"
+        return f"VPN用户({self.username})"
