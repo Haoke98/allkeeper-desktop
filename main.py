@@ -176,7 +176,7 @@ def main(port, dev, lan):
     window.events.restored += on_restored
     window.events.resized += on_resized
     window.events.moved += on_moved
-    webview.start(on_window_start, args=(window, dev, lan, port), ssl=True)
+    webview.start(on_window_start, args=(window, dev, lan, port), ssl=True, debug=dev)
     print("Command line arguments (after execute):", sys.argv)
     if dev:
         print("AllKeeperDesktop is now running on development mode !")
