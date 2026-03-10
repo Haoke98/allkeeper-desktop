@@ -17,6 +17,12 @@ import click
 import psutil
 import requests
 import webview
+
+try:
+    if sys.platform == 'darwin':
+        import AppKit
+except ImportError:
+    pass
 #example  this  is test.
 
 HOME_DIR = os.path.expanduser("~")
@@ -268,6 +274,14 @@ def on_loaded(window):
 
 
 def on_window_start(window: webview.Window, dev_mode: bool, lan_access: bool, port: int = 8000):
+    # Set dock icon on macOS
+    if sys.platform == 'darwin' and 'AppKit' in sys.modules:
+        icon_path = os.path.join(BASE_DIR, 'allkeeper.icns')
+        if os.path.exists(icon_path):
+            image = AppKit.NSImage.alloc().initByReferencingFile_(icon_path)
+            if image:
+                AppKit.NSApplication.sharedApplication().setApplicationIconImage_(image)
+
     # 根据是否允许局域网访问设置host
     host = '0.0.0.0' if lan_access else '127.0.0.1'
     print("Lan Access:", lan_access, "Host:", host)
@@ -307,6 +321,17 @@ def main(port, dev, lan):
     webview.settings['OPEN_EXTERNAL_LINKS_IN_BROWSER'] = True # 提升用户体验，外部链接直接在默认浏览器打开
     webview.settings['OPEN_DEVTOOLS_IN_DEBUG'] = False # 调试模式下自动打开开发者工具
     
+    # Determine icon path for window
+    icon_file = None
+    if sys.platform == 'darwin':
+        p = os.path.join(BASE_DIR, 'allkeeper.icns')
+        if os.path.exists(p):
+            icon_file = p
+    elif sys.platform == 'win32' or os.name == 'nt':
+        p = os.path.join(BASE_DIR, 'allkeeper.ico')
+        if os.path.exists(p):
+            icon_file = p
+
     # Enable High DPI support usually handled automatically, but vibrancy adds nice touch on macOS
     window = webview.create_window(
         'All-Keeper', 
@@ -315,7 +340,7 @@ def main(port, dev, lan):
         height=1000,
         vibrancy=True, # macOS visual effect
         zoomable=True, # Allow zooming
-        text_select=True # Allow text selection
+        text_select=True, # Allow text selection
     )
     
     window.events.closed += on_closed
@@ -330,7 +355,7 @@ def main(port, dev, lan):
     
     # Note: ssl=True in start() enables SSL for the internal server (if used). 
     # Since we use external Django server, this mainly affects local file serving if any.
-    webview.start(on_window_start, args=(window, dev, lan, port), ssl=True, debug=dev)
+    webview.start(on_window_start, args=(window, dev, lan, port), ssl=True, debug=dev, icon=icon_file)
     
     print("Command line arguments (after execute):", sys.argv)
     if dev:
