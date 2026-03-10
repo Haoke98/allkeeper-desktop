@@ -133,6 +133,140 @@ def on_moved(x, y):
     print('pywebview window is moved. new coordinates are x: {x}, y: {y}'.format(x=x, y=y))
 
 
+def on_loaded(window):
+    # Inject JS patch for handling Django Admin popups (e.g. ForeignKey add button)
+    # This simulates window.open behavior using an iframe modal, enabling window.opener communication
+    # Updated to handle SimpleUI iframes and avoid null reference errors
+    js_popup_patch = r"""
+    (function() {
+        // Function to patch a specific window instance
+        function patchWindow(targetWindow) {
+            if (!targetWindow) return;
+            try {
+                // Check access (same-origin check)
+                const _ = targetWindow.location.href;
+                if (targetWindow.pywebview_popup_patch_injected) return;
+            } catch (e) { return; }
+
+            targetWindow.pywebview_popup_patch_injected = true;
+            console.log('PyWebView Popup Patch Injected for:', targetWindow.location.href);
+
+            const originalOpen = targetWindow.open;
+            targetWindow.open = function(url, name, specs) {
+                console.log('Intercepted window.open:', url, name, specs);
+                const urlString = String(url);
+                
+                // Check for Django Admin popup indicators
+                // Django admin popups usually have '_popup=1' in query string
+                // name can be 'RelatedObjectLookups' or 'id_field_name'
+                if ((urlString && urlString.includes('_popup=1')) || name === 'RelatedObjectLookups' || (specs && specs.includes('resizable'))) {
+                    // Use top window for modal to ensure it covers everything visually
+                    const topDoc = window.top.document;
+                    
+                    const modal = topDoc.createElement('div');
+                    Object.assign(modal.style, {
+                        position: 'fixed', top: '0', left: '0', width: '100%', height: '100%',
+                        backgroundColor: 'rgba(0,0,0,0.5)', zIndex: '99999',
+                        display: 'flex', justifyContent: 'center', alignItems: 'center'
+                    });
+                    
+                    const iframe = topDoc.createElement('iframe');
+                    iframe.src = urlString;
+                    Object.assign(iframe.style, {
+                        width: '90%', height: '90%', backgroundColor: 'white',
+                        border: 'none', borderRadius: '5px', boxShadow: '0 0 10px rgba(0,0,0,0.5)'
+                    });
+                    
+                    const closeBtn = topDoc.createElement('button');
+                    closeBtn.textContent = '×';
+                    Object.assign(closeBtn.style, {
+                        position: 'absolute', top: '20px', right: '20px',
+                        fontSize: '24px', background: 'none', border: 'none',
+                        color: 'white', cursor: 'pointer', fontWeight: 'bold'
+                    });
+                    
+                    // Mock window object to return immediately
+                    // This prevents "null is not an object" error when calling win.focus()
+                    const mockWindow = {
+                        focus: function() { console.log('Mock window focused'); },
+                        close: function() { if(modal.parentNode) modal.parentNode.removeChild(modal); },
+                        closed: false
+                    };
+
+                    closeBtn.onclick = function() { 
+                        mockWindow.close();
+                    };
+                    
+                    modal.appendChild(iframe);
+                    modal.appendChild(closeBtn);
+                    topDoc.body.appendChild(modal);
+                    
+                    // Setup opener relationship when iframe loads
+                    iframe.onload = function() {
+                        try {
+                            const childWin = iframe.contentWindow;
+                            // CRITICAL: The opener must be the window that called open()
+                            // In this closure, 'targetWindow' is the window being patched (e.g. the iframe window)
+                            childWin.opener = targetWindow; 
+                            childWin.originalClose = childWin.close;
+                            childWin.close = function() {
+                                mockWindow.close();
+                            };
+                            // Also patch the new popup window itself, just in case it opens more popups
+                            patchWindow(childWin);
+                        } catch (e) { console.error('Cannot access iframe content:', e); }
+                    };
+                    
+                    return mockWindow;
+                }
+                return originalOpen.apply(targetWindow, arguments);
+            };
+        }
+
+        // 1. Patch top window
+        patchWindow(window);
+
+        // 2. Helper to process iframes
+        function processIframes(rootNode) {
+            const iframes = rootNode.getElementsByTagName('iframe');
+            for (let i = 0; i < iframes.length; i++) {
+                const iframe = iframes[i];
+                try {
+                    // Try to patch immediately
+                    patchWindow(iframe.contentWindow);
+                    // Also listen for load (for dynamic src changes)
+                    iframe.addEventListener('load', function() {
+                        patchWindow(this.contentWindow);
+                    });
+                } catch(e) {}
+            }
+        }
+
+        // Process existing iframes
+        processIframes(document);
+
+        // 3. Observe for new iframes (MutationObserver)
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                for (let i = 0; i < mutation.addedNodes.length; i++) {
+                    const node = mutation.addedNodes[i];
+                    if (node.tagName === 'IFRAME') {
+                        node.addEventListener('load', function() {
+                            patchWindow(this.contentWindow);
+                        });
+                    } else if (node.getElementsByTagName) {
+                        // Check if added node contains iframes
+                        processIframes(node);
+                    }
+                }
+            });
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+    })();
+    """
+    window.evaluate_js(js_popup_patch)
+
+
 def on_window_start(window: webview.Window, dev_mode: bool, lan_access: bool, port: int = 8000):
     # 根据是否允许局域网访问设置host
     host = '0.0.0.0' if lan_access else '127.0.0.1'
@@ -192,6 +326,7 @@ def main(port, dev, lan):
     window.events.restored += on_restored
     window.events.resized += on_resized
     window.events.moved += on_moved
+    window.events.loaded += on_loaded
     
     # Note: ssl=True in start() enables SSL for the internal server (if used). 
     # Since we use external Django server, this mainly affects local file serving if any.
