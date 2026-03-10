@@ -7,10 +7,98 @@
 @disc:
 ======================================="""
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from django.utils.html import escapejs
+import json
+import sys
 
 from ..models import UnifiedServiceUser, Service
+from ..utils.browser_control import get_browser_windows, open_url, PermissionError, BrowserControlError, is_browser_installed
+
+@csrf_exempt
+def get_windows_api(request):
+    browser = request.GET.get('browser')
+    if not browser:
+        return JsonResponse({'status': 'error', 'message': 'Browser parameter is required'}, status=400)
+    
+    # Check if browser is installed
+    if browser != 'default' and not is_browser_installed(browser):
+        return JsonResponse({'status': 'error', 'code': 'NOT_INSTALLED', 'message': 'Browser not installed'}, status=404)
+
+    try:
+        windows = get_browser_windows(browser)
+        return JsonResponse({'status': 'success', 'windows': windows})
+    except PermissionError as e:
+        return JsonResponse({'status': 'error', 'code': 'PERMISSION_DENIED', 'message': str(e)}, status=403)
+    except BrowserControlError as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+@csrf_exempt
+def get_installed_browsers_api(request):
+    browsers = {
+        'default': True,
+        'chrome': is_browser_installed('chrome'),
+        'safari': True, # Always true on macOS
+        'edge': is_browser_installed('edge'),
+        'firefox': is_browser_installed('firefox'),
+        'opera': is_browser_installed('opera'),
+        'brave': is_browser_installed('brave')
+    }
+    return JsonResponse({'status': 'success', 'browsers': browsers})
+
+@csrf_exempt
+def open_browser(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            url = data.get('url')
+            browser_name = data.get('browser', 'default')
+            # new_window is now part of window_id logic ('new' or specific id)
+            # but we keep backward compatibility if needed, though frontend will change
+            window_id = data.get('window_id')
+            
+            # Legacy support: if new_window is True and window_id is not set
+            if not window_id and data.get('new_window'):
+                window_id = 'new'
+
+            if not url:
+                return JsonResponse({'status': 'error', 'message': 'URL is required'}, status=400)
+
+            print(f"Opening {url} in {browser_name} (window_id={window_id})")
+
+            # Platform specific logic (macOS)
+            if sys.platform == 'darwin':
+                if browser_name == 'default':
+                    # Default browser logic
+                    import webbrowser
+                    if window_id == 'new':
+                        webbrowser.open_new(url)
+                    else:
+                        webbrowser.open(url)
+                    return JsonResponse({'status': 'success', 'message': 'Browser opened (Default)'})
+                
+                success, msg = open_url(browser_name, url, window_id)
+                if success:
+                    return JsonResponse({'status': 'success', 'message': msg})
+                else:
+                    return JsonResponse({'status': 'error', 'message': msg}, status=500)
+            else:
+                # Fallback for non-macOS (only support default/new window basic)
+                import webbrowser
+                if window_id == 'new':
+                     webbrowser.open_new(url)
+                else:
+                     webbrowser.open(url)
+
+            return JsonResponse({'status': 'success', 'message': 'Browser opened'})
+        except Exception as e:
+             import traceback
+             traceback.print_exc()
+             return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+    return JsonResponse({'status': 'error', 'message': 'Method not allowed'}, status=405)
 
 
 @login_required
