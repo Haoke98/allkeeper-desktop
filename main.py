@@ -17,6 +17,7 @@ import click
 import psutil
 import requests
 import webview
+import webbrowser
 
 try:
     if sys.platform == 'darwin':
@@ -35,6 +36,12 @@ if not os.path.exists(LOG_DIR):
 
 
 service_pids = []
+
+
+class JsApi:
+    def open_external_url(self, url):
+        print(f"Opening external URL: {url}")
+        webbrowser.open(url)
 
 
 def kill_process(pid):
@@ -269,6 +276,177 @@ def on_loaded(window):
         });
         observer.observe(document.body, { childList: true, subtree: true });
     })();
+
+    // Intercept custom protocol links (ssh://, vnc://, rdp://, etc.)
+    // and open them using the system's default handler via Python API
+    (function() {
+        console.log('Injecting custom protocol handler');
+        
+        // Helper function to find pywebview API
+        function getPyWebViewApi() {
+            if (window.pywebview && window.pywebview.api) return window.pywebview.api;
+            try {
+                if (window.top && window.top.pywebview && window.top.pywebview.api) return window.top.pywebview.api;
+            } catch(e) {}
+            return null;
+        }
+
+        // Helper function to check and handle protocols
+        function handleProtocol(url) {
+            if (!url) return false;
+            // console.log('Checking protocol for URL:', url); // Too noisy
+            const protocols = ['ssh:', 'vnc:', 'rdp:', 'telnet:', 'sftp:', 'ftp:'];
+            let isCustom = false;
+            
+            try {
+                const urlObj = new URL(url);
+                if (protocols.includes(urlObj.protocol)) {
+                    isCustom = true;
+                }
+            } catch (e) {
+                // Fallback for non-standard URLs or relative paths
+                if (protocols.some(p => url.startsWith(p))) {
+                    isCustom = true;
+                }
+            }
+
+            if (isCustom) {
+                console.log('Intercepted custom protocol:', url);
+                const api = getPyWebViewApi();
+                if (api) {
+                    console.log('Calling Python API open_external_url');
+                    api.open_external_url(url);
+                    return true;
+                } else {
+                    console.error('pywebview API not found!');
+                }
+            }
+            return false;
+        }
+
+        // 1. Intercept global clicks (capturing phase)
+        window.addEventListener('click', function(e) {
+            const link = e.target.closest('a');
+            if (link && link.href) {
+                if (handleProtocol(link.href)) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            }
+        }, true);
+
+        // 2. Intercept dynamic link clicks (for scripts that create <a> and call .click())
+        const originalClick = HTMLAnchorElement.prototype.click;
+        HTMLAnchorElement.prototype.click = function() {
+            // Check if href is available on the element
+            const href = this.href || this.getAttribute('href');
+            if (href && handleProtocol(href)) {
+                return;
+            }
+            return originalClick.apply(this, arguments);
+        };
+        
+        // 3. Global listener for any navigation attempt (e.g. window.location.href = ...)
+        // Unfortunately, we cannot easily intercept window.location assignments directly in a cross-browser way without proxies.
+        // However, we can poll or use beforeunload (but that's for leaving).
+        // A common pattern in single page apps or scripts is creating an iframe or link to navigate.
+        
+        // PATCH: Overwrite remoteControlUtils.js openSsh function if it exists globally
+        // This is specific to the user's codebase where openSsh creates a link and clicks it.
+        // Since we already intercepted link.click(), it should work, BUT:
+        // The link created in openSsh has target='_top'.
+        // If the click interception above fails for some reason (e.g. event propagation stopped),
+        // we can try to patch the function directly if it's exposed.
+        
+        // Better yet, let's look at the console log provided by the user.
+        // It shows "正在尝试打开兼容性链接...". This log comes from remoteControlUtils.js.
+        // The script then creates a link and clicks it.
+        // The link has target="_top".
+        
+        // If the interception is working, we should see "Intercepted custom protocol" in the logs.
+        // The user's screenshot does NOT show "Intercepted custom protocol".
+        // This means our click listener or click override is NOT being triggered or is failing.
+        
+        // REASON: The openSsh function in remoteControlUtils.js creates a link element but DOES NOT append it to the DOM immediately in all cases,
+        // OR it appends it, clicks it, and removes it.
+        // The user's code: document.body.appendChild(link); link.click();
+        
+        // IF the openSsh function runs in an iframe (e.g. the dialog content), 
+        // AND our patch is injected into the top window,
+        // THEN the iframe's window object is DIFFERENT from the top window.
+        // So HTMLAnchorElement.prototype.click in the iframe is NOT patched!
+        
+        // FIX: We need to inject this patch into ALL frames, just like we did for the popup patch.
+        
+        function patchWindowProtocols(targetWindow) {
+             if (!targetWindow) return;
+             try {
+                 const _ = targetWindow.location.href;
+                 if (targetWindow.pywebview_protocol_patch_injected) return;
+             } catch (e) { return; }
+             
+             targetWindow.pywebview_protocol_patch_injected = true;
+             console.log('Protocol Patch Injected for:', targetWindow.location.href);
+             
+             // 1. Intercept clicks
+             targetWindow.addEventListener('click', function(e) {
+                const link = e.target.closest('a');
+                if (link && link.href) {
+                    if (handleProtocol(link.href)) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+                }
+            }, true);
+            
+            // 2. Override click()
+            // We need to be careful not to break existing functionality
+            const originalClick = targetWindow.HTMLAnchorElement.prototype.click;
+            targetWindow.HTMLAnchorElement.prototype.click = function() {
+                const href = this.href || this.getAttribute('href');
+                if (href && handleProtocol(href)) {
+                    return;
+                }
+                return originalClick.apply(this, arguments);
+            };
+        }
+        
+        // Patch top
+        patchWindowProtocols(window);
+        
+        // Patch existing iframes
+        function processIframes(rootNode) {
+            const iframes = rootNode.getElementsByTagName('iframe');
+            for (let i = 0; i < iframes.length; i++) {
+                const iframe = iframes[i];
+                try {
+                    patchWindowProtocols(iframe.contentWindow);
+                    iframe.addEventListener('load', function() {
+                        patchWindowProtocols(this.contentWindow);
+                    });
+                } catch(e) {}
+            }
+        }
+        processIframes(document);
+        
+        // Observer for new iframes
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                for (let i = 0; i < mutation.addedNodes.length; i++) {
+                    const node = mutation.addedNodes[i];
+                    if (node.tagName === 'IFRAME') {
+                        node.addEventListener('load', function() {
+                            patchWindowProtocols(this.contentWindow);
+                        });
+                    } else if (node.getElementsByTagName) {
+                        processIframes(node);
+                    }
+                }
+            });
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+        
+    })();
     """
     window.evaluate_js(js_popup_patch)
 
@@ -341,6 +519,7 @@ def main(port, dev, lan):
         vibrancy=True, # macOS visual effect
         zoomable=True, # Allow zooming
         text_select=True, # Allow text selection
+        js_api=JsApi() # Enable JS API for custom protocol handling
     )
     
     window.events.closed += on_closed

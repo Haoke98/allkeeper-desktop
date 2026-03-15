@@ -43,6 +43,25 @@ function openSsh(host, port, username, password, title) {
     // 调试日志（对密码脱敏）
     console.log("正在尝试打开兼容性链接:", sshUrl.replace(encodedPassword, '******'));
 
+    // 优先尝试使用 PyWebView 的 Python API 调用
+    // 这种方式最可靠，因为它直接在 Python 进程中调用系统命令，绕过了浏览器的协议限制
+    try {
+        let api = null;
+        if (window.pywebview && window.pywebview.api) {
+            api = window.pywebview.api;
+        } else if (window.top && window.top.pywebview && window.top.pywebview.api) {
+            api = window.top.pywebview.api;
+        }
+
+        if (api) {
+            console.log("检测到 PyWebView 环境，直接调用 Python API 打开链接");
+            api.open_external_url(sshUrl);
+            return;
+        }
+    } catch (e) {
+        console.warn("尝试调用 PyWebView API 失败:", e);
+    }
+
     // 使用 <a> 标签模拟点击，并设置 target 为 _top
     // 这样浏览器会将其视为顶级窗口的导航，绕过对 iframe 内部 "嵌入凭据的子资源请求" 的拦截
     const link = document.createElement('a');
