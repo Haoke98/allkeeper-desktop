@@ -72,10 +72,11 @@ class ServerNew(NetDevice):
             else:
                 return f"服务器({self.code})"
         else:
+            short_id = self.id[:8]+"-...-"+self.id[-8:] if self.id else self.id
             if self.remark:
-                return f"服务器({self.id},{self.remark})"
+                return f"服务器({short_id},{self.remark})"
             else:
-                return f"服务器({self.id})"
+                return f"服务器({short_id})"
 
 
 class ServerStatus(BaseModel):
