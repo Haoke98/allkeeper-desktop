@@ -498,6 +498,63 @@ def main(port, dev, lan):
     webview.settings['ALLOW_FILE_URLS'] = True # 允许加载本地文件 URL
     webview.settings['OPEN_EXTERNAL_LINKS_IN_BROWSER'] = True # 提升用户体验，外部链接直接在默认浏览器打开
     webview.settings['OPEN_DEVTOOLS_IN_DEBUG'] = False # 调试模式下自动打开开发者工具
+    startup_html = """
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>All-Keeper</title>
+        <style>
+            :root {
+                color-scheme: light dark;
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            }
+            body {
+                margin: 0;
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: #f5f5f7;
+                color: #1f2328;
+            }
+            .panel {
+                padding: 24px 28px;
+                border-radius: 12px;
+                background: rgba(255, 255, 255, 0.9);
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+                text-align: center;
+                max-width: 420px;
+            }
+            h2 {
+                margin: 0 0 12px;
+                font-size: 24px;
+            }
+            p {
+                margin: 0;
+                line-height: 1.6;
+            }
+            @media (prefers-color-scheme: dark) {
+                body {
+                    background: #1c1c1e;
+                    color: #f5f5f7;
+                }
+                .panel {
+                    background: rgba(44, 44, 46, 0.92);
+                    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="panel">
+            <h2>All-Keeper is starting...</h2>
+            <p>Waiting for local services to become ready.</p>
+        </div>
+    </body>
+    </html>
+    """
     
     # Determine icon path for window
     icon_file = None
@@ -513,7 +570,7 @@ def main(port, dev, lan):
     # Enable High DPI support usually handled automatically, but vibrancy adds nice touch on macOS
     window = webview.create_window(
         'All-Keeper', 
-        "http://localhost:9080", 
+        html=startup_html,
         width=1400, 
         height=1000,
         vibrancy=True, # macOS visual effect
