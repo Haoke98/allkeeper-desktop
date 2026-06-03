@@ -6,6 +6,7 @@ from .account import BaseAccount
 class Email(BaseAccount):
     # TODO: 需要增加别名了
     # TODO: 增加电子邮箱的后缀字段
+    pwd = models.CharField(max_length=32, verbose_name="密码", null=True, blank=True)
     pass
 
     class Meta:
