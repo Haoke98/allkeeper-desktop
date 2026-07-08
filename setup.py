@@ -30,14 +30,14 @@ ENTRY_POINT = ['main.py']
 OPTIONS = {
     'argv_emulation': True,
     'strip': True,
-    'iconfile': 'allkeeper.icns',  # uncomment to include an icon
+    'iconfile': 'AccessPodKeyHub.icns',  # 桌面应用图标
     'includes': ['django', 'webssh'],
     'excludes': ['_pytest', 'pdb', 'unittest', 'doctest'],
     'plist': {
-        'CFBundleName': 'AllKeeper',
-        'CFBundleDisplayName': 'AllKeeper',
-        'CFBundleGetInfoString': "AllKeeper",
-        'CFBundleIdentifier': 'com.0p.AllKeeper',
+        'CFBundleName': 'AccessPod+KeyHub',
+        'CFBundleDisplayName': 'AccessPod+KeyHub',
+        'CFBundleGetInfoString': "AccessPod+KeyHub",
+        'CFBundleIdentifier': 'com.0p.AccessPodKeyHub',
         'CFBundleVersion': file_version,  # 使用从 version.txt 中解析的 FileVersion
         'CFBundleShortVersionString': product_version,  # 使用从 version.txt 中解析的 ProductVersion
         'NSHumanReadableCopyright': copyright_text,  # 使用从 version.txt 中解析的版权信息
@@ -45,7 +45,7 @@ OPTIONS = {
 }
 
 setup(
-    name="AllKeeper",
+    name="AccessPodKeyHub",
     app=ENTRY_POINT,
     packages=['service', ],
     include_package_data=True,

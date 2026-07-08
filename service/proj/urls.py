@@ -30,9 +30,9 @@ from . import _STATIC_URL
 from .view import media
 
 # 网站标签页名称
-admin.site.site_title = "AllKeeper"
+admin.site.site_title = "AccessPod+KeyHub"
 # 网站名称：显示在登录页和首页
-admin.site.site_header = 'AllKeeper'
+admin.site.site_header = 'AccessPod+KeyHub'
 # 取消注册 Sites 模型
 admin.site.unregister(Site)
 

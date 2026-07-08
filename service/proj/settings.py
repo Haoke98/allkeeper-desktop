@@ -122,7 +122,7 @@ LOGGING = {
         'file': {  # 记录到日志文件(需要创建对应的目录，否则会出错)
             'level': 'INFO',
             'filters': ['new_add', 'request_id'],
-            'filename': os.path.join(LOG_FILE_DIR, 'AllKeeper.log'),  # 日志输出文件
+            'filename': os.path.join(LOG_FILE_DIR, 'AccessPodKeyHub.log'),  # 日志输出文件
             'formatter': 'standard',  # 使用哪种formatters日志格式
             'backupCount': 100,  # 备份份数
             'encoding': 'utf-8',

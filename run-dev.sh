@@ -1,1 +1,1 @@
-./dist/AllKeeper.app/Contents/MacOS/Allkeeper
+./dist/AccessPod+KeyHub.app/Contents/MacOS/AccessPodKeyHub

@@ -22,7 +22,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='AllKeeper',
+    name='AccessPodKeyHub',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -35,6 +35,6 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon='allkeeper.ico',
+    icon='AccessPodKeyHub.ico',
     version='version.txt',  # 指定版本信息文件
 )

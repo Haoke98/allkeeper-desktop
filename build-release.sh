@@ -1,2 +1,2 @@
 mkdir -p release
-hdiutil create -volname "AllKeeper" -srcfolder "dist/AllKeeper.app" -ov -format UDZO "release/AllKeeper.dmg"
+hdiutil create -volname "AccessPod+KeyHub" -srcfolder "dist/AccessPod+KeyHub.app" -ov -format UDZO "release/AccessPod+KeyHub.dmg"
