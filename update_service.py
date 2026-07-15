@@ -1,6 +1,6 @@
 import os
 
-service_file = 'service/jumpService/models/services/service.py'
+service_file = 'service/core/jumpService/models/services/service.py'
 
 with open(service_file, 'r', encoding='utf-8') as f:
     content = f.read()

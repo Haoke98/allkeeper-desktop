@@ -5,7 +5,7 @@ site_packages_path = get_package_paths('django')[0]
 
 a = Analysis(
     ['main.py'],
-    pathex=[],
+    pathex=['core'],  # AllKeeper Core submodule (accountSystem/jumpService/utils)
     binaries=[],
     datas=[
         # 添加 simplepro 的模板路径

@@ -1,6 +1,6 @@
 import re
 
-files = ["service/jumpService/models/services/db.py", "service/jumpService/models/services/vpn.py"]
+files = ["service/core/jumpService/models/services/db.py", "service/core/jumpService/models/services/vpn.py"]
 
 for file_path in files:
     with open(file_path, "r", encoding="utf-8") as f:
