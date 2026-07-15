@@ -170,6 +170,7 @@ LOGGING = {
 
 # Application definition
 INSTALLED_APPS = [
+    'corsheaders',
     'simplepro',
     'simpleui',
     'django.contrib.sites',
@@ -202,6 +203,7 @@ CACHES = {
     }
 }
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'log_request_id.middleware.RequestIDMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -318,3 +320,12 @@ MINIO_STORAGE_MEDIA_BACKUP_FORMAT = '%c/'
 MINIO_STORAGE_AUTO_CREATE_MEDIA_BUCKET = True
 MINIO_STORAGE_STATIC_BUCKET_NAME = 'allkeeper-static'
 MINIO_STORAGE_CERT_CHECK = False
+
+# CORS configuration for Tauri dev server
+CORS_ALLOW_ALL_ORIGINS = DEBUG  # Allow all in dev mode
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    'tauri://localhost',
+]
+CORS_ALLOW_CREDENTIALS = True

@@ -15,6 +15,19 @@ Including another URLconf
 """
 import accountSystem.urls
 import jumpService.urls
+from jumpService.views.api import ServerViewSet, ServiceViewSet, UserSystemViewSet, NetViewSet, IPAddressViewSet, UnifiedServiceUserViewSet, OperationSystemViewSet, ServiceTypeViewSet
+from rest_framework.routers import DefaultRouter
+
+# DRF Router for API endpoints
+api_router = DefaultRouter()
+api_router.register(r'servers', ServerViewSet, basename='api-server')
+api_router.register(r'services', ServiceViewSet, basename='api-service')
+api_router.register(r'user-systems', UserSystemViewSet, basename='api-user-system')
+api_router.register(r'credentials', UnifiedServiceUserViewSet, basename='api-credential')
+api_router.register(r'nets', NetViewSet, basename='api-net')
+api_router.register(r'ips', IPAddressViewSet, basename='api-ip')
+api_router.register(r'systems', OperationSystemViewSet, basename='api-system')
+api_router.register(r'service-types', ServiceTypeViewSet, basename='api-servicetype')
 from django.conf.urls import include
 from django.contrib import admin
 from django.contrib.auth.models import Group, User
@@ -51,6 +64,7 @@ urlpatterns = [
     re_path(r'^static/(?P<path>.*)$', serve, ({'document_root': settings.STATIC_ROOT})),
     path('sp/', include('simplepro.urls')),
     re_path('^jump_service/', include(jumpService.urls)),
+    path('api/', include(api_router.urls)),
     re_path(r'^static/(?P<path>.*)$', serve, ({'document_root': settings.STATIC_ROOT})),
     re_path(r'^media/(?P<path>.*)$', media)
 ]
