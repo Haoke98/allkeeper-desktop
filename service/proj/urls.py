@@ -15,7 +15,6 @@ Including another URLconf
 """
 import accountSystem.urls
 import jumpService.urls
-from jumpService.views.api import ServerViewSet, ServiceViewSet, UserSystemViewSet, NetViewSet, IPAddressViewSet, UnifiedServiceUserViewSet, OperationSystemViewSet, ServiceTypeViewSet, OperationSystemImageViewSet
 from rest_framework.routers import DefaultRouter
 
 # DRF Router for API endpoints
@@ -28,7 +27,6 @@ api_router.register(r'nets', NetViewSet, basename='api-net')
 api_router.register(r'ips', IPAddressViewSet, basename='api-ip')
 api_router.register(r'systems', OperationSystemViewSet, basename='api-system')
 api_router.register(r'service-types', ServiceTypeViewSet, basename='api-servicetype')
-api_router.register(r'os-images', OperationSystemImageViewSet, basename='api-os-image')
 from django.conf.urls import include
 from django.contrib import admin
 from django.contrib.auth.models import Group, User
