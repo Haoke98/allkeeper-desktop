@@ -16,6 +16,7 @@ Including another URLconf
 import accountSystem.urls
 import jumpService.urls
 from rest_framework.routers import DefaultRouter
+from jumpService.views.api import ServerViewSet, ServiceViewSet, UserSystemViewSet, NetViewSet, IPAddressViewSet, UnifiedServiceUserViewSet, OperationSystemViewSet, ServiceTypeViewSet, OperationSystemImageViewSet
 
 # DRF Router for API endpoints
 api_router = DefaultRouter()
